@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}關於我們 - 兩餸飯搜查組{% endblock %}
+
+{% block content %}
+<div class="section section-about" style="padding: 80px 0;">
+  <div class="container">
+    <!-- Header Section -->
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <h2 class="title" style="margin-bottom: 50px;">關於我們</h2>
+      </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="row">
+      <div class="col-md-8 ml-auto mr-auto">
+        <div class="card" style="background: #f8f9fa; border: none; border-radius: 15px; padding: 40px;">
+          
+          <!-- Admin Team Section -->
+          <div class="mb-5">
+            <h4 class="mb-4 text-center" style="color: #2c3e50;">管理團隊</h4>
+            <p class="text-center text-muted mb-4">歡迎來到兩餸飯搜查組！我們的專業團隊致力於為大家提供最優質的兩餸飯資訊和服務。</p>
+            
+            <div class="row">
+              <!-- Admin 1 -->
+              <div class="col-md-6 col-lg-3 mb-4">
+                <div class="text-center">
+                  <img src="{% static 'img/avatar.jpg' %}" alt="管理員1" class="img-fluid rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                  <h5 style="color: #2c3e50;">Mandy</h5>
+                  <p class="text-muted small">首席美食搜查員</p>
+                  <p class="text-muted small">專精港式茶餐廳文化，擁有10年餐飲業經驗</p>
+                </div>
+              </div>
+              
+              <!-- Admin 2 -->
+              <div class="col-md-6 col-lg-3 mb-4">
+                <div class="text-center">
+                  <img src="{% static 'img/profile.jpg' %}" alt="管理員2" class="img-fluid rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                  <h5 style="color: #2c3e50;">Kenny</h5>
+                  <p class="text-muted small">品質監控專員</p>
+                  <p class="text-muted small">負責餐廳評級標準制定，確保推薦品質</p>
+                </div>
+              </div>
+              
+              <!-- Admin 3 -->
+              <div class="col-md-6 col-lg-3 mb-4">
+                <div class="text-center">
+                  <img src="{% static 'img/eva.jpg' %}" alt="管理員3" class="img-fluid rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                  <h5 style="color: #2c3e50;">Chrissy</h5>
+                  <p class="text-muted small">社群營運經理</p>
+                  <p class="text-muted small">管理用戶社群，收集反饋意見</p>
+                </div>
+              </div>
+              
+              <!-- Admin 4 -->
+              <div class="col-md-6 col-lg-3 mb-4">
+                <div class="text-center">
+                  <img src="{% static 'img/ryan.jpg' %}" alt="管理員4" class="img-fluid rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                  <h5 style="color: #2c3e50;">Raymond</h5>
+                  <p class="text-muted small">技術開發總監</p>
+                  <p class="text-muted small">負責平台技術開發與維護</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="text-center mt-4">
+              <p class="text-muted">作為一個專業的美食搜查團隊，我們深入了解每一間餐廳的特色，為您帶來最真實的用餐體驗分享。</p>
+            </div>
+          </div>
+          
+          <!-- Mission Section -->
+          <div class="row mb-5">
+            <div class="col-md-12">
+              <h4 class="mb-4" style="color: #2c3e50; text-align: center;">我們的使命</h4>
+              <div class="row">
+                <div class="col-md-4 text-center mb-4">
+                  <div class="info-icon" style="background: #e74c3c; width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-search" style="color: white; font-size: 24px;"></i>
+                  </div>
+                  <h5>專業搜查</h5>
+                  <p class="text-muted">深入每間餐廳，為您搜查最優質的兩餸飯</p>
+                </div>
+                <div class="col-md-4 text-center mb-4">
+                  <div class="info-icon" style="background: #3498db; width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-star" style="color: white; font-size: 24px;"></i>
+                  </div>
+                  <h5>品質保證</h5>
+                  <p class="text-muted">嚴格篩選，只推薦最值得信賴的餐廳</p>
+                </div>
+                <div class="col-md-4 text-center mb-4">
+                  <div class="info-icon" style="background: #27ae60; width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-users" style="color: white; font-size: 24px;"></i>
+                  </div>
+                  <h5>社群分享</h5>
+                  <p class="text-muted">建立美食愛好者社群，分享用餐心得</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Contact Info -->
+          <div class="row">
+            <div class="col-md-12 text-center">
+              <h4 class="mb-4" style="color: #2c3e50;">聯絡我們</h4>
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <i class="fas fa-envelope" style="color: #e74c3c; font-size: 24px; margin-bottom: 10px;"></i>
+                  <p class="text-muted">info@2dishrice.com</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <i class="fas fa-phone" style="color: #3498db; font-size: 24px; margin-bottom: 10px;"></i>
+                  <p class="text-muted">+852 1234 5678</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <i class="fas fa-map-marker-alt" style="color: #27ae60; font-size: 24px; margin-bottom: 10px;"></i>
+                  <p class="text-muted">香港各區</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+    
+    <!-- Bottom Section -->
+    <div class="row mt-5">
+      <div class="col-md-12 text-center">
+        <p class="text-muted">感謝您選擇兩餸飯搜查組，讓我們一起探索美食世界！</p>
+      </div>
+    </div>
+    
+  </div>
+</div>
+{% endblock content %}
