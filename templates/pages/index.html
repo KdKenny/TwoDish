@@ -26,24 +26,24 @@
               <div class="col-md-4 mb-2">
                 <select name="restaurant_district" class="form-control">
                   <option value="">選擇分區 (可選)</option>
-                  <option value="Islands">Islands</option>
-                  <option value="Kwai Tsing">Kwai Tsing</option>
-                  <option value="North">North</option>
-                  <option value="Sai Kung">Sai Kung</option>
-                  <option value="Sha Tin">Sha Tin</option>
-                  <option value="Tai Po">Tai Po</option>
-                  <option value="Tuen Mun">Tuen Mun</option>
-                  <option value="Tsuen Wan">Tsuen Wan</option>
-                  <option value="Yuen Long">Yuen Long</option>
-                  <option value="Kowloon City">Kowloon City</option>
-                  <option value="Kwun Tong">Kwun Tong</option>
-                  <option value="Sham Shui Po">Sham Shui Po</option>
-                  <option value="Wong Tai Sin">Wong Tai Sin</option>
-                  <option value="Yau Tsim Mong">Yau Tsim Mong</option>
-                  <option value="Central & Western">Central & Western</option>
-                  <option value="Eastern">Eastern</option>
-                  <option value="Southern">Southern</option>
-                  <option value="Wan Chai">Wan Chai</option>
+                  <option value="離島">離島</option>
+                  <option value="葵青">葵青</option>
+                  <option value="北區">北區</option>
+                  <option value="西貢">西貢</option>
+                  <option value="沙田">沙田</option>
+                  <option value="大埔">大埔</option>
+                  <option value="屯門">屯門</option>
+                  <option value="荃灣">荃灣</option>
+                  <option value="元朗">元朗</option>
+                  <option value="九龍城">九龍城</option>
+                  <option value="觀塘">觀塘</option>
+                  <option value="深水埗">深水埗</option>
+                  <option value="黃大仙">黃大仙</option>
+                  <option value="油尖旺">油尖旺</option>
+                  <option value="中西區">中西區</option>
+                  <option value="東區">東區</option>
+                  <option value="南區">南區</option>
+                  <option value="灣仔">灣仔</option>
                 </select>
               </div>
               <div class="col-md-6 mb-2">
@@ -64,40 +64,179 @@
         <script>
           // 地區對應中心點
           const regionCenters = {
-            hongkong: {lat: 22.2783, lng: 114.1747},
-            kowloon: {lat: 22.3167, lng: 114.1833},
-            nt: {lat: 22.3964, lng: 114.1095}
+            'Hong Kong': {lat: 22.2783, lng: 114.1747, zoom: 12},
+            'Kowloon': {lat: 22.3167, lng: 114.1833, zoom: 12},
+            'New Territories': {lat: 22.3964, lng: 114.1095, zoom: 11},
+            'Islands': {lat: 22.2559, lng: 113.9867, zoom: 11} // 修正離島中心點及縮放
           };
+
+          const districtCenters = {
+            '中西區': { center: { lat: 22.2840, lng: 114.1578 }, zoom: 15 },
+            '東區': { center: { lat: 22.2813, lng: 114.2235 }, zoom: 14 },
+            '南區': { center: { lat: 22.2477, lng: 114.1707 }, zoom: 14 },
+            '灣仔': { center: { lat: 22.2794, lng: 114.1742 }, zoom: 15 },
+            '九龍城': { center: { lat: 22.3290, lng: 114.1891 }, zoom: 14 },
+            '觀塘': { center: { lat: 22.3132, lng: 114.2258 }, zoom: 14 },
+            '深水埗': { center: { lat: 22.3305, lng: 114.1621 }, zoom: 15 },
+            '黃大仙': { center: { lat: 22.3420, lng: 114.1931 }, zoom: 14 },
+            '油尖旺': { center: { lat: 22.3120, lng: 114.1709 }, zoom: 14 },
+            '離島': { center: { lat: 22.2559, lng: 113.9867 }, zoom: 14 }, 
+            '葵青': { center: { lat: 22.3572, lng: 114.1090 }, zoom: 14 },
+            '北區': { center: { lat: 22.4986, lng: 114.1303 }, zoom: 13 },
+            '西貢': { center: { lat: 22.3828, lng: 114.2700 }, zoom: 13 },
+            '沙田': { center: { lat: 22.3808, lng: 114.1870 }, zoom: 13 },
+            '大埔': { center: { lat: 22.4500, lng: 114.1650 }, zoom: 13 },
+            '荃灣': { center: { lat: 22.3718, lng: 114.1140 }, zoom: 14 },
+            '屯門': { center: { lat: 22.3917, lng: 113.9767 }, zoom: 13 },
+            '元朗': { center: { lat: 22.4450, lng: 114.0220 }, zoom: 13 }
+          };
+
+          const regionDistrictMapping = {
+            'Hong Kong': ['中西區', '東區', '南區', '灣仔'],
+            'Kowloon': ['九龍城', '觀塘', '深水埗', '黃大仙', '油尖旺'],
+            'New Territories': ['葵青', '北區', '西貢', '沙田', '大埔', '荃灣', '屯門', '元朗'],
+            'Islands': ['離島']
+          };
+
           let map;
           function initMap() {
             map = new google.maps.Map(document.getElementById('map'), {
               center: {lat: 22.3193, lng: 114.1694},
-              zoom: 11
+              zoom: 10
             });
           }
           window.initMap = initMap;
+
           document.addEventListener('DOMContentLoaded', function() {
             if (typeof google !== 'undefined' && google.maps) {
               initMap();
             }
-            document.getElementById('regionSelect').addEventListener('change', function(e) {
-              const val = e.target.value;
-              if(regionCenters[val]) {
-                map.setCenter(regionCenters[val]);
+
+            const regionSelect = document.querySelector('select[name="restaurant_area"]');
+            const districtSelect = document.querySelector('select[name="restaurant_district"]');
+
+            regionSelect.addEventListener('change', function(e) {
+              const selectedRegion = e.target.value;
+              // 清空並禁用分區下拉列表
+              districtSelect.innerHTML = '<option value="">選擇分區 (可選)</option>';
+
+              if (regionCenters[selectedRegion]) {
+                map.setCenter(regionCenters[selectedRegion]);
+                map.setZoom(regionCenters[selectedRegion].zoom);
               }
-            });
-            document.getElementById('mapSearch').addEventListener('keydown', function(e) {
-              if(e.key === 'Enter') {
-                const query = e.target.value;
-                const service = new google.maps.places.PlacesService(map);
-                const request = {query: query, fields: ['name', 'geometry']};
-                service.findPlaceFromQuery(request, function(results, status) {
-                  if (status === google.maps.places.PlacesServiceStatus.OK && results[0]) {
-                    map.setCenter(results[0].geometry.location);
-                  }
+
+              if (selectedRegion && regionDistrictMapping[selectedRegion]) {
+                const districts = regionDistrictMapping[selectedRegion];
+                districts.forEach(district => {
+                  const option = document.createElement('option');
+                  option.value = district;
+                  option.textContent = district;
+                  districtSelect.appendChild(option);
+                });
+              } else if (!selectedRegion) {
+                // 如果沒有選擇地區，則顯示所有分區
+                Object.keys(districtCenters).forEach(district => {
+                    const option = document.createElement('option');
+                    option.value = district;
+                    option.textContent = district;
+                    districtSelect.appendChild(option);
                 });
               }
             });
+
+            districtSelect.addEventListener('change', function(e) {
+              const selectedDistrict = e.target.value;
+              if (districtCenters[selectedDistrict]) {
+                map.setCenter(districtCenters[selectedDistrict].center);
+                map.setZoom(districtCenters[selectedDistrict].zoom);
+              }
+            });
+
+            // 保持原有的表單提交和地圖搜索邏輯
+            document.getElementById('restaurantSearchForm').addEventListener('submit', function(e) {
+              e.preventDefault();
+
+              const restaurantName = document.querySelector('input[name="restaurant_name"]').value.trim();
+              const street = document.querySelector('input[name="restaurant_street"]').value.trim();
+              const address = document.querySelector('input[name="restaurant_address"]').value.trim();
+              const selectedRegion = regionSelect.value;
+              const selectedDistrict = districtSelect.value;
+
+              let searchQuery = '';
+              if (restaurantName) {
+                searchQuery += restaurantName + ' ';
+              }
+              if (street) {
+                searchQuery += street + ' ';
+              }
+              if (address) {
+                searchQuery += address + ' ';
+              }
+              // 優先使用更詳細的地址信息進行搜索
+              if (searchQuery.trim() !== '') {
+                if (selectedDistrict && districtCenters[selectedDistrict]) {
+                    searchQuery += selectedDistrict + ' ';
+                } else if (selectedRegion && regionCenters[selectedRegion]) {
+                    searchQuery += selectedRegion + ' ';
+                }
+                searchQuery += '香港'; // 添加香港以提高準確性
+
+                const service = new google.maps.places.PlacesService(map);
+                const request = {query: searchQuery.trim(), fields: ['name', 'geometry', 'formatted_address']};
+                service.findPlaceFromQuery(request, function(results, status) {
+                  if (status === google.maps.places.PlacesServiceStatus.OK && results && results[0] && results[0].geometry) {
+                    map.setCenter(results[0].geometry.location);
+                    // 可以根據需要調整縮放級別，例如：
+                    map.setZoom(17); // 設置一個較近的縮放級別
+                    // 你也可以在這裡添加一個標記到地圖上
+                    // new google.maps.Marker({
+                    //   position: results[0].geometry.location,
+                    //   map: map,
+                    //   title: results[0].name
+                    // });
+                  } else {
+                    // 如果搜索不到，可以給用戶一些提示，或者回退到區域/地區中心
+                    console.warn('地址搜索無結果:', status);
+                    if (districtCenters[selectedDistrict]) {
+                        map.setCenter(districtCenters[selectedDistrict].center);
+                        map.setZoom(districtCenters[selectedDistrict].zoom);
+                    } else if (regionCenters[selectedRegion]) {
+                        map.setCenter(regionCenters[selectedRegion]);
+                        map.setZoom(regionCenters[selectedRegion].zoom);
+                    }
+                  }
+                });
+                return; // 使用了詳細地址搜索，不再執行後續的區域/地區定位
+              }
+
+              // 如果沒有輸入餐廳名稱、街道或地址，則按原邏輯處理地區和分區的選擇
+              if (districtCenters[selectedDistrict]) {
+                map.setCenter(districtCenters[selectedDistrict].center);
+                map.setZoom(districtCenters[selectedDistrict].zoom);
+                return; // 如果選擇了分區，則以此為準
+              }
+              if (regionCenters[selectedRegion]) {
+                map.setCenter(regionCenters[selectedRegion]);
+                map.setZoom(regionCenters[selectedRegion].zoom);
+              }
+            });
+
+            // 如果存在 mapSearch 元素，則保留其事件監聽器
+            const mapSearchElement = document.getElementById('mapSearch');
+            if (mapSearchElement) {
+                mapSearchElement.addEventListener('keydown', function(e) {
+                  if(e.key === 'Enter') {
+                    const query = e.target.value;
+                    const service = new google.maps.places.PlacesService(map);
+                    const request = {query: query, fields: ['name', 'geometry']};
+                    service.findPlaceFromQuery(request, function(results, status) {
+                      if (status === google.maps.places.PlacesServiceStatus.OK && results[0]) {
+                        map.setCenter(results[0].geometry.location);
+                      }
+                    });
+                  }
+                });
+            }
           });
         </script>
         <!-- Google Map & Search Section End -->
@@ -107,36 +246,207 @@
         <h2 class="title" style="margin-bottom: 50px;">精選美食 - 冠名贊助</h2>
       </div>
     </div>
-    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel" data-interval="2000">
-      <div class="carousel-inner">
-        <div class="carousel-item active">
-          <div class="d-flex justify-content-center">
-            <img src="https://picsum.photos/200/100?random=1" class="d-block" alt="..." style="margin-right: 10px;">
-            <img src="https://picsum.photos/200/100?random=2" class="d-block" alt="..." style="margin-right: 10px;">
-            <img src="https://picsum.photos/200/100?random=3" class="d-block" alt="..." style="margin-right: 10px;">
-            <img src="https://picsum.photos/200/100?random=4" class="d-block" alt="..." style="margin-right: 10px;">
-            <img src="https://picsum.photos/200/100?random=5" class="d-block" alt="...">
-          </div>
+    <style>
+      .custom-carousel-container {
+        overflow: hidden;
+        position: relative;
+      }
+      .custom-carousel-inner {
+        display: flex; /* Arrange items in a row */
+        transition: transform 0.5s ease-in-out; /* Smooth transition for sliding */
+      }
+      .custom-carousel-item {
+        min-width: 200px; /* Width of each image container */
+        margin-right: 10px;
+        flex-shrink: 0; /* Prevent items from shrinking */
+      }
+      .custom-carousel-item img {
+        width: 100%;
+        height: 100px; /* Fixed height for images */
+        object-fit: cover; /* Ensure images cover the area nicely */
+        display: block;
+      }
+      .carousel-control-prev,
+      .carousel-control-next {
+        width: 5%; /* Adjust control button width */
+      }
+    </style>
+    <div id="customCarousel" class="custom-carousel-container">
+      <div class="custom-carousel-inner">
+        <!-- Repeat this block for each image you want to display -->
+        <div class="custom-carousel-item">
+          <img src="https://picsum.photos/200/100?random=1" alt="...">
         </div>
-        <div class="carousel-item">
-          <div class="d-flex justify-content-center">
-            <img src="https://picsum.photos/200/100?random=6" class="d-block" alt="..." style="margin-right: 10px;">
-            <img src="https://picsum.photos/200/100?random=7" class="d-block" alt="..." style="margin-right: 10px;">
-            <img src="https://picsum.photos/200/100?random=8" class="d-block" alt="..." style="margin-right: 10px;">
-            <img src="https://picsum.photos/200/100?random=9" class="d-block" alt="..." style="margin-right: 10px;">
-            <img src="https://picsum.photos/200/100?random=10" class="d-block" alt="...">
-          </div>
+        <div class="custom-carousel-item">
+          <img src="https://picsum.photos/200/100?random=2" alt="...">
         </div>
+        <div class="custom-carousel-item">
+          <img src="https://picsum.photos/200/100?random=3" alt="...">
+        </div>
+        <div class="custom-carousel-item">
+          <img src="https://picsum.photos/200/100?random=4" alt="...">
+        </div>
+        <div class="custom-carousel-item">
+          <img src="https://picsum.photos/200/100?random=5" alt="...">
+        </div>
+        <div class="custom-carousel-item">
+          <img src="https://picsum.photos/200/100?random=6" alt="...">
+        </div>
+        <div class="custom-carousel-item">
+          <img src="https://picsum.photos/200/100?random=7" alt="...">
+        </div>
+        <div class="custom-carousel-item">
+          <img src="https://picsum.photos/200/100?random=8" alt="...">
+        </div>
+        <div class="custom-carousel-item">
+          <img src="https://picsum.photos/200/100?random=9" alt="...">
+        </div>
+        <div class="custom-carousel-item">
+          <img src="https://picsum.photos/200/100?random=10" alt="...">
+        </div>
+        <!-- Add more items as needed -->
       </div>
-      <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+      <a class="carousel-control-prev" href="#customCarousel" role="button" data-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="sr-only">Previous</span>
       </a>
-      <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+      <a class="carousel-control-next" href="#customCarousel" role="button" data-slide="next">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="sr-only">Next</span>
       </a>
     </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const carousel = document.querySelector('#customCarousel');
+      const inner = carousel.querySelector('.custom-carousel-inner');
+      const itemsOriginal = Array.from(carousel.querySelectorAll('.custom-carousel-item'));
+      const prevButton = carousel.querySelector('.carousel-control-prev');
+      const nextButton = carousel.querySelector('.carousel-control-next');
+      
+      if (itemsOriginal.length === 0) return; // Exit if no items
+
+      let itemWidth = 0;
+      let currentIndex = 0; // This will now track the logical index of the original items
+      const totalOriginalItems = itemsOriginal.length;
+      let itemsVisible = 1;
+      let autoPlayInterval;
+      let isTransitioning = false;
+
+      // Clone items for infinite loop effect
+      const clonesToPrepend = itemsOriginal.slice(-totalOriginalItems).map(item => item.cloneNode(true));
+      const clonesToAppend = itemsOriginal.slice(0, totalOriginalItems).map(item => item.cloneNode(true));
+
+      clonesToPrepend.forEach(clone => inner.insertBefore(clone, itemsOriginal[0]));
+      clonesToAppend.forEach(clone => inner.appendChild(clone));
+
+      const allItems = Array.from(inner.querySelectorAll('.custom-carousel-item'));
+      const totalDisplayItems = allItems.length; // Total items including clones
+
+      function calculateDimensions() {
+        itemWidth = itemsOriginal[0].offsetWidth + parseInt(getComputedStyle(itemsOriginal[0]).marginRight || '0');
+        if (carousel.offsetWidth > 0 && itemWidth > 0) {
+            itemsVisible = Math.max(1, Math.floor(carousel.offsetWidth / itemWidth));
+        } else {
+            itemsVisible = 1; 
+        }
+        // Set initial position to show the first original item
+        inner.style.transition = 'none'; // Disable transition for initial jump
+        inner.style.transform = `translateX(-${(totalOriginalItems + currentIndex) * itemWidth}px)`;
+        setTimeout(() => {
+            inner.style.transition = 'transform 0.5s ease-in-out'; // Re-enable transition
+        }, 50); // Small delay to ensure transition is off for the jump
+      }
+
+      function updateCarousel(animate = true) {
+        if (isTransitioning && animate) return;
+        if (animate) {
+            isTransitioning = true;
+            inner.style.transition = 'transform 0.5s ease-in-out';
+        } else {
+            inner.style.transition = 'none';
+        }
+        // The transform is based on the position within the `allItems` array
+        // which includes prepended clones. `totalOriginalItems` acts as an offset.
+        const targetTranslateX = - (totalOriginalItems + currentIndex) * itemWidth;
+        inner.style.transform = `translateX(${targetTranslateX}px)`;
+
+        if (animate) {
+            inner.addEventListener('transitionend', handleTransitionEnd, { once: true });
+        } else {
+            handleTransitionEnd(); // Call directly if no animation
+        }
+      }
+      
+      function handleTransitionEnd() {
+        isTransitioning = false;
+        // Check for jumps after transition
+        if (currentIndex >= totalOriginalItems) { // Reached appended clones (end)
+            currentIndex = currentIndex % totalOriginalItems; // Jump to start of original items
+            inner.style.transition = 'none';
+            inner.style.transform = `translateX(-${(totalOriginalItems + currentIndex) * itemWidth}px)`;
+            setTimeout(() => { inner.style.transition = 'transform 0.5s ease-in-out'; }, 50);
+        } else if (currentIndex < 0) { // Reached prepended clones (start)
+            currentIndex = (currentIndex % totalOriginalItems + totalOriginalItems) % totalOriginalItems; // Jump to end of original items
+            inner.style.transition = 'none';
+            inner.style.transform = `translateX(-${(totalOriginalItems + currentIndex) * itemWidth}px)`;
+            setTimeout(() => { inner.style.transition = 'transform 0.5s ease-in-out'; }, 50);
+        }
+      }
+
+      function moveToNext() {
+        if (isTransitioning) return;
+        currentIndex++;
+        updateCarousel();
+      }
+
+      function moveToPrev() {
+        if (isTransitioning) return;
+        currentIndex--;
+        updateCarousel();
+      }
+
+      prevButton.addEventListener('click', function (e) {
+        e.preventDefault();
+        moveToPrev();
+        resetAutoPlay();
+      });
+
+      nextButton.addEventListener('click', function (e) {
+        e.preventDefault();
+        moveToNext();
+        resetAutoPlay();
+      });
+
+      function startAutoPlay() {
+        stopAutoPlay();
+        autoPlayInterval = setInterval(moveToNext, 2000);
+      }
+
+      function stopAutoPlay() {
+        clearInterval(autoPlayInterval);
+      }
+
+      function resetAutoPlay() {
+        stopAutoPlay();
+        startAutoPlay();
+      }
+
+      calculateDimensions();
+      // updateCarousel(false); // Initial positioning is now handled in calculateDimensions
+      startAutoPlay();
+
+      window.addEventListener('resize', () => {
+        stopAutoPlay();
+        calculateDimensions();
+        // updateCarousel(false); // Initial positioning is now handled in calculateDimensions
+        startAutoPlay();
+      });
+
+      carousel.addEventListener('mouseenter', stopAutoPlay);
+      carousel.addEventListener('mouseleave', startAutoPlay);
+    });
+    </script>
     
     <div class="row mt-5">
       <div class="col-md-12 text-center">
