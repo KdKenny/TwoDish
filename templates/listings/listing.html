@@ -1,0 +1,301 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+{% block title %} 你找的兩餸飯店  {% endblock title %}
+{% block content %}
+{% comment %} <h1 class="display-4">{{listing.restaurant_name}}</h1> {% endcomment %}
+{% comment %} {% for comment in comments %}
+    <div>评论ID: {{ comment.comment}}</div>
+    <hr>
+{% empty %}
+    <div class="alert alert-info">暂无评论</div>
+{% endfor %}  {% endcomment %}
+
+<section id="showcase-inner" class="py-5 text-primary">
+      <div class="container">
+        <div class="row text-center">
+          <div class="col-md-12">
+            {% comment %}  {% endcomment %}
+            <h1 class="display-4">舖頭名稱： {{listing.restaurant_name | title}}</h1>
+            {% comment %}  {% endcomment %}
+            <p class="lead"><i class="fas fa-map-marker"></i> 舖頭地址： {{listing.restaurant_address | title}}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+        <!-- Listing -->
+    <section id="listing" class="py-4">
+      <div class="container">
+        {% comment %}  {% endcomment %}
+        <a href= {% url "listings:search" %} class="btn btn-light mb-4">Back To Search Page</a>
+        <div class="row">
+          <div class="col-md-9">
+            <!-- Home Main Image -->
+            {% comment %}  {% endcomment %}
+            <img
+                class="card-img-top"
+                {% if listing.restaurant_photo_main %}
+                src="{{ listing.restaurant_photo_main.url }}"
+                {% else %}
+                src="{% static 'images/default_restaurant.jpg' %}"
+                {% endif %}
+                alt="Restaurant photo"
+              />
+            <!-- Thumbnails -->
+            <div class="row mb-5 thumbs">
+              {% if listing.menu_photo1 %}
+              <div class="col-md-2">
+                {% comment %}  {% endcomment %}
+                <a
+                  href={{listing.menu_photo1.url}}
+                  data-lightbox="home-images"
+                >
+                {% comment %}  {% endcomment %}
+                  <img
+                    src={{listing.menu_photo1.url}}
+                    alt=""
+                    class="img-fluid"
+                  />
+                </a>
+              </div>
+              {% endif %}
+
+              {% if listing.menu_photo2 %}
+              <div class="col-md-2">
+                {% comment %}  {% endcomment %}
+                <a
+                  href={{listing.menu_photo2.url}}
+                  data-lightbox="home-images"
+                >
+                {% comment %}  {% endcomment %}
+                  <img
+                    src={{listing.menu_photo2.url}}
+                    alt=""
+                    class="img-fluid"
+                  />
+                </a>
+              </div>
+              {% endif %}
+
+             {% if listing.menu_photo3 %}
+              <div class="col-md-2">
+                {% comment %}  {% endcomment %}
+                <a
+                  href={{listing.menu_photo3.url}}
+                  data-lightbox="home-images"
+                >
+                {% comment %}  {% endcomment %}
+                  <img
+                    src={{listing.menu_photo3.url}}
+                    alt=""
+                    class="img-fluid"
+                  />
+                </a>
+              </div>
+              {% endif %}
+
+              {% if listing.menu_photo4 %}
+              <div class="col-md-2">
+                {% comment %}  {% endcomment %}
+                <a
+                  href={{listing.menu_photo4.url}}
+                  data-lightbox="home-images"
+                >
+                {% comment %}  {% endcomment %}
+                  <img
+                    src={{listing.menu_photo4.url}}
+                    alt=""
+                    class="img-fluid"
+                  />
+                </a>
+              </div>
+              {% endif %}
+
+              {% if listing.menu_photo5 %}
+              <div class="col-md-2">
+                {% comment %}  {% endcomment %}
+                <a
+                  href={{listing.menu_photo5.url}}
+                  data-lightbox="home-images"
+                >
+                {% comment %}  {% endcomment %}
+                  <img
+                    src={{listing.menu_photo5.url}}
+                    alt=""
+                    class="img-fluid"
+                  />
+                </a>
+              </div>
+              {% endif %}
+
+              {% if listing.menu_photo6 %}
+              <div class="col-md-2">
+                {% comment %}  {% endcomment %}
+                <a
+                  href={{listing.menu_photo6.url}}
+                  data-lightbox="home-images"
+                >
+                {% comment %}  {% endcomment %}
+                  <img
+                    src={{listing.menu_photo6.url}}
+                    alt=""
+                    class="img-fluid"
+                  />
+                </a>
+              </div>
+              {% endif %}
+            </div>
+
+            <!-- Fields -->
+            <div class="row mb-12 fields">
+              <div class="col-md-6">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item text-secondary">
+                    {% comment %}  {% endcomment %}
+                    <i class="fas fa-money-bill-alt"></i> Two Dish Price:
+                    <span class="float-right">{{listing.two_dish_price}}</span>
+                  </li>
+                 <li class="list-group-item text-secondary">
+                    {% comment %}  {% endcomment %}
+                    <i class="fas fa-money-bill-alt"></i> Three Dish Price:
+                    <span class="float-right">{{listing.three_dish_price}}</span>
+                  </li>   
+                <li class="list-group-item text-secondary">
+                    {% comment %}  {% endcomment %}
+                    <i class="fas fa-money-bill-alt"></i> Address:
+                    <span class="float-right">{{listing.restaurant_address}}</span>
+                  </li>                  
+                </ul>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div class="row mb-5">
+              <div class="col-md-12">餐單：
+                {{listing.menu | linebreaks}}
+              </div>
+            </div>
+          </div>
+         </div>
+    </section>
+
+<!-- Comments Section -->
+<div class="row">
+  <div class="col-md-12">
+    <h3>評論 <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#inquiryModal">添加評論</button></h3>
+    
+    {% if comments_with_ratings %}
+      {% for item in comments_with_ratings %}
+        <div class="card mb-3" style="background-color: #FFE4B5; color: #000000; font-size: 1.1em;">
+          <div class="card-body">
+            <h5 class="card-title" style="color: #000000;">{{ item.comment.foodie_name }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted" style="color: #666666;">{{ item.comment.list_date }}</h6>
+            <p class="card-text" style="color: #000000;">{{ item.comment.comment }}</p>
+            <p class="card-text"><span style="color: #0066FF; font-size: 1.3em; font-weight: bold;">餐廳評分: {{ item.comment.restaurant_rating }}/5</span></p>
+            
+            <!-- 評論評分顯示區域 -->
+            <div class="comment-rating-section">
+              {% if item.avg_comment_rating %}
+                <p class="card-text"><small class="text-success">評論平均評分: {{ item.avg_comment_rating }}/5</small></p>
+              {% else %}
+                <p class="card-text"><small class="text-muted" style="color: #666666;">尚無評分</small></p>
+              {% endif %}
+              
+              <!-- 評分按鈕 -->
+              <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#rateCommentModal{{ item.comment.id }}">
+                為此評論評分
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 評論評分模態框 -->
+        <div class="modal fade" id="rateCommentModal{{ item.comment.id }}" tabindex="-1" role="dialog" aria-labelledby="rateCommentModalLabel{{ item.comment.id }}" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="rateCommentModalLabel{{ item.comment.id }}">為 {{ item.comment.foodie_name }} 的評論評分</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <form action="{% url 'comments:addcomment' %}" method="POST">
+                <div class="modal-body">
+                  {% csrf_token %}
+                  <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                  <input type="hidden" name="target_comment_id" value="{{ item.comment.id }}">
+                  <input type="hidden" name="comment" value="">
+                  <input type="hidden" name="restaurant_rating" value="0">
+                  
+                  <div class="form-group">
+                    <label for="comment_rating{{ item.comment.id }}">評論評分 (0-5)</label>
+                    <select class="form-control" name="comment_rating" id="comment_rating{{ item.comment.id }}" required>
+                      <option value="">選擇評分</option>
+                      <option value="0">0 - 不選擇</option>
+                      <option value="1">1 - 差</option>
+                      <option value="2">2 - 一般</option>
+                      <option value="3">3 - 好</option>
+                      <option value="4">4 - 很好</option>
+                      <option value="5">5 - 優秀</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                  <button type="submit" class="btn btn-primary">提交評分</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>尚無評論</p>
+    {% endif %}
+  </div>
+</div>
+
+<!-- 添加評論模態框 -->
+<div class="modal fade" id="inquiryModal" tabindex="-1" role="dialog" aria-labelledby="inquiryModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="inquiryModalLabel">添加評論</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="{% url 'comments:addcomment' %}" method="POST">
+        <div class="modal-body">
+          {% csrf_token %}
+          <input type="hidden" name="listing_id" value="{{ listing.id }}">
+          
+          <div class="form-group">
+            <label for="comment">評論內容</label>
+            <textarea class="form-control" name="comment" rows="3" required></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="restaurant_rating">餐廳評分 (0-5)</label>
+            <select class="form-control" name="restaurant_rating" required>
+              <option value="">選擇評分</option>
+              <option value="0">0 - 不選擇</option>
+              <option value="1">1 - 差</option>
+              <option value="2">2 - 一般</option>
+              <option value="3">3 - 好</option>
+              <option value="4">4 - 很好</option>
+              <option value="5">5 - 優秀</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+          <button type="submit" class="btn btn-primary">提交評論</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

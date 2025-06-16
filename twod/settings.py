@@ -43,7 +43,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     "debug_toolbar",
-    'pages',
+    'pages.apps.PagesConfig',
+    'listings.apps.ListingsConfig',
+    'comments.apps.CommentsConfig',
 ]
 
 MIDDLEWARE = [
