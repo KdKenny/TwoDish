@@ -9,13 +9,13 @@
       <!-- Google Map & Search Section Start -->
         <div class="map-search-section" style="margin-top:10px;">
           <div id="map" style="width:100%;height:600px;border-radius:10px;"></div>
-          <form id="restaurantSearchForm" class="mt-3">
+          <form id="restaurantSearchForm" action="{% url 'listings:search' %}" method="GET" class="mt-3">
             <div class="row">
               <div class="col-md-4 mb-2">
                 <input type="text" name="restaurant_name" class="form-control" placeholder="餐廳名稱 (可選)">
               </div>
               <div class="col-md-4 mb-2">
-                <select name="restaurant_area" class="form-control">
+                <select name="restaurant_area" class="form-control" id="restaurant_area">
                   <option value="">選擇地區 (可選)</option>
                   <option value="Hong Kong">香港</option>
                   <option value="Kowloon">九龍</option>
@@ -24,7 +24,7 @@
                 </select>
               </div>
               <div class="col-md-4 mb-2">
-                <select name="restaurant_district" class="form-control">
+                <select name="restaurant_district" class="form-control" id="restaurant_district">
                   <option value="">選擇分區 (可選)</option>
                   <option value="離島">離島</option>
                   <option value="葵青">葵青</option>
@@ -91,11 +91,32 @@
             '元朗': { center: { lat: 22.4450, lng: 114.0220 }, zoom: 13 }
           };
 
+          const chineseToEnglishDistrictMap = {
+              '離島': 'Islands',
+              '葵青': 'Kwai Tsing',
+              '北區': 'North',
+              '西貢': 'Sai Kung',
+              '沙田': 'Sha Tin',
+              '大埔': 'Tai Po',
+              '屯門': 'Tuen Mun',
+              '荃灣': 'Tsuen Wan',
+              '元朗': 'Yuen Long',
+              '九龍城': 'Kowloon City',
+              '觀塘': 'Kwun Tong',
+              '深水埗': 'Sham Shui Po',
+              '黃大仙': 'Wang Tai Sin',
+              '油尖旺': 'Yau Tsim Mong',
+              '中西區': 'Central & Western',
+              '東區': 'Eastern',
+              '南區': 'Southern',
+              '灣仔': 'Wan Chai'
+          };
+
           const regionDistrictMapping = {
-            'Hong Kong': ['中西區', '東區', '南區', '灣仔'],
-            'Kowloon': ['九龍城', '觀塘', '深水埗', '黃大仙', '油尖旺'],
-            'New Territories': ['葵青', '北區', '西貢', '沙田', '大埔', '荃灣', '屯門', '元朗'],
-            'Islands': ['離島']
+              'Hong Kong': ['中西區', '東區', '南區', '灣仔'],
+              'Kowloon': ['九龍城', '觀塘', '深水埗', '黃大仙', '油尖旺'],
+              'New Territories': ['葵青', '北區', '西貢', '沙田', '大埔', '荃灣', '屯門', '元朗'],
+              'Islands': ['離島']
           };
 
           let map;
@@ -127,99 +148,46 @@
 
               if (selectedRegion && regionDistrictMapping[selectedRegion]) {
                 const districts = regionDistrictMapping[selectedRegion];
-                districts.forEach(district => {
-                  const option = document.createElement('option');
-                  option.value = district;
-                  option.textContent = district;
-                  districtSelect.appendChild(option);
+                districts.forEach(districtChineseName => {
+                    const englishValue = chineseToEnglishDistrictMap[districtChineseName];
+                    if (englishValue) {
+                        const option = document.createElement('option');
+                        option.value = englishValue;
+                        option.textContent = districtChineseName;
+                        districtSelect.appendChild(option);
+                    }
                 });
               } else if (!selectedRegion) {
                 // 如果沒有選擇地區，則顯示所有分區
-                Object.keys(districtCenters).forEach(district => {
-                    const option = document.createElement('option');
-                    option.value = district;
-                    option.textContent = district;
-                    districtSelect.appendChild(option);
+                Object.keys(chineseToEnglishDistrictMap).forEach(districtChineseName => {
+                    const englishValue = chineseToEnglishDistrictMap[districtChineseName];
+                    if (englishValue) {
+                        const option = document.createElement('option');
+                        option.value = englishValue;
+                        option.textContent = districtChineseName;
+                        districtSelect.appendChild(option);
+                    }
                 });
               }
             });
 
             districtSelect.addEventListener('change', function(e) {
-              const selectedDistrict = e.target.value;
-              if (districtCenters[selectedDistrict]) {
-                map.setCenter(districtCenters[selectedDistrict].center);
-                map.setZoom(districtCenters[selectedDistrict].zoom);
+              const selectedDistrictEnglish = e.target.value;
+              // 找到對應的中文名稱
+              const selectedDistrictChinese = Object.keys(chineseToEnglishDistrictMap).find(
+                key => chineseToEnglishDistrictMap[key] === selectedDistrictEnglish
+              );
+              if (selectedDistrictChinese && districtCenters[selectedDistrictChinese]) {
+                map.setCenter(districtCenters[selectedDistrictChinese].center);
+                map.setZoom(districtCenters[selectedDistrictChinese].zoom);
               }
             });
 
             // 保持原有的表單提交和地圖搜索邏輯
-            document.getElementById('restaurantSearchForm').addEventListener('submit', function(e) {
-              e.preventDefault();
-
-              const restaurantName = document.querySelector('input[name="restaurant_name"]').value.trim();
-              const street = document.querySelector('input[name="restaurant_street"]').value.trim();
-              const address = document.querySelector('input[name="restaurant_address"]').value.trim();
-              const selectedRegion = regionSelect.value;
-              const selectedDistrict = districtSelect.value;
-
-              let searchQuery = '';
-              if (restaurantName) {
-                searchQuery += restaurantName + ' ';
-              }
-              if (street) {
-                searchQuery += street + ' ';
-              }
-              if (address) {
-                searchQuery += address + ' ';
-              }
-              // 優先使用更詳細的地址信息進行搜索
-              if (searchQuery.trim() !== '') {
-                if (selectedDistrict && districtCenters[selectedDistrict]) {
-                    searchQuery += selectedDistrict + ' ';
-                } else if (selectedRegion && regionCenters[selectedRegion]) {
-                    searchQuery += selectedRegion + ' ';
-                }
-                searchQuery += '香港'; // 添加香港以提高準確性
-
-                const service = new google.maps.places.PlacesService(map);
-                const request = {query: searchQuery.trim(), fields: ['name', 'geometry', 'formatted_address']};
-                service.findPlaceFromQuery(request, function(results, status) {
-                  if (status === google.maps.places.PlacesServiceStatus.OK && results && results[0] && results[0].geometry) {
-                    map.setCenter(results[0].geometry.location);
-                    // 可以根據需要調整縮放級別，例如：
-                    map.setZoom(17); // 設置一個較近的縮放級別
-                    // 你也可以在這裡添加一個標記到地圖上
-                    // new google.maps.Marker({
-                    //   position: results[0].geometry.location,
-                    //   map: map,
-                    //   title: results[0].name
-                    // });
-                  } else {
-                    // 如果搜索不到，可以給用戶一些提示，或者回退到區域/地區中心
-                    console.warn('地址搜索無結果:', status);
-                    if (districtCenters[selectedDistrict]) {
-                        map.setCenter(districtCenters[selectedDistrict].center);
-                        map.setZoom(districtCenters[selectedDistrict].zoom);
-                    } else if (regionCenters[selectedRegion]) {
-                        map.setCenter(regionCenters[selectedRegion]);
-                        map.setZoom(regionCenters[selectedRegion].zoom);
-                    }
-                  }
-                });
-                return; // 使用了詳細地址搜索，不再執行後續的區域/地區定位
-              }
-
-              // 如果沒有輸入餐廳名稱、街道或地址，則按原邏輯處理地區和分區的選擇
-              if (districtCenters[selectedDistrict]) {
-                map.setCenter(districtCenters[selectedDistrict].center);
-                map.setZoom(districtCenters[selectedDistrict].zoom);
-                return; // 如果選擇了分區，則以此為準
-              }
-              if (regionCenters[selectedRegion]) {
-                map.setCenter(regionCenters[selectedRegion]);
-                map.setZoom(regionCenters[selectedRegion].zoom);
-              }
-            });
+            // document.getElementById('restaurantSearchForm').addEventListener('submit', function(e) {
+            //   e.preventDefault();
+            //   ...（地圖搜尋邏輯）...
+            // });
 
             // 如果存在 mapSearch 元素，則保留其事件監聽器
             const mapSearchElement = document.getElementById('mapSearch');
@@ -259,12 +227,25 @@
         min-width: 200px; /* Width of each image container */
         margin-right: 10px;
         flex-shrink: 0; /* Prevent items from shrinking */
+        cursor: pointer;
+        transition: transform 0.2s ease;
+      }
+      .custom-carousel-item:hover {
+        transform: scale(1.05);
       }
       .custom-carousel-item img {
         width: 100%;
         height: 100px; /* Fixed height for images */
         object-fit: cover; /* Ensure images cover the area nicely */
         display: block;
+        border-radius: 5px;
+      }
+      .custom-carousel-item a {
+        display: block;
+        text-decoration: none !important;
+      }
+      .custom-carousel-item a:hover {
+        text-decoration: none !important;
       }
       .carousel-control-prev,
       .carousel-control-next {
@@ -273,37 +254,22 @@
     </style>
     <div id="customCarousel" class="custom-carousel-container">
       <div class="custom-carousel-inner">
-        <!-- Repeat this block for each image you want to display -->
+        <!-- Display featured listings -->
+        {% for listing in featured_listings %}
         <div class="custom-carousel-item">
-          <img src="https://picsum.photos/200/100?random=1" alt="...">
+          <a href="{% url 'listings:listing' listing.id %}" style="text-decoration: none; color: inherit;">
+            <img src="{{ listing.restaurant_photo_main.url }}" alt="{{ listing.restaurant_name }}" title="{{ listing.restaurant_name }}">
+            <div style="text-align: center; padding: 5px; font-size: 12px; color: #333;">
+              {{ listing.restaurant_name|truncatechars:15 }}
+            </div>
+          </a>
         </div>
+        {% empty %}
+        <!-- Fallback if no listings available -->
         <div class="custom-carousel-item">
-          <img src="https://picsum.photos/200/100?random=2" alt="...">
+          <img src="https://picsum.photos/200/100?random=1" alt="暫無餐廳">
         </div>
-        <div class="custom-carousel-item">
-          <img src="https://picsum.photos/200/100?random=3" alt="...">
-        </div>
-        <div class="custom-carousel-item">
-          <img src="https://picsum.photos/200/100?random=4" alt="...">
-        </div>
-        <div class="custom-carousel-item">
-          <img src="https://picsum.photos/200/100?random=5" alt="...">
-        </div>
-        <div class="custom-carousel-item">
-          <img src="https://picsum.photos/200/100?random=6" alt="...">
-        </div>
-        <div class="custom-carousel-item">
-          <img src="https://picsum.photos/200/100?random=7" alt="...">
-        </div>
-        <div class="custom-carousel-item">
-          <img src="https://picsum.photos/200/100?random=8" alt="...">
-        </div>
-        <div class="custom-carousel-item">
-          <img src="https://picsum.photos/200/100?random=9" alt="...">
-        </div>
-        <div class="custom-carousel-item">
-          <img src="https://picsum.photos/200/100?random=10" alt="...">
-        </div>
+        {% endfor %}
         <!-- Add more items as needed -->
       </div>
       <a class="carousel-control-prev" href="#customCarousel" role="button" data-slide="prev">
@@ -320,25 +286,63 @@
     document.addEventListener('DOMContentLoaded', function () {
       const carousel = document.querySelector('#customCarousel');
       const inner = carousel.querySelector('.custom-carousel-inner');
-      const itemsOriginal = Array.from(carousel.querySelectorAll('.custom-carousel-item'));
+      let itemsOriginal = Array.from(carousel.querySelectorAll('.custom-carousel-item'));
       const prevButton = carousel.querySelector('.carousel-control-prev');
       const nextButton = carousel.querySelector('.carousel-control-next');
       
       if (itemsOriginal.length === 0) return; // Exit if no items
 
+      // Shuffle function to randomize array
+      function shuffleArray(array) {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+      }
+
+      // Randomize the order of items
+      const shuffledItems = shuffleArray(itemsOriginal);
+      
+      // Clear the inner container and append shuffled items
+      inner.innerHTML = '';
+      shuffledItems.forEach(item => inner.appendChild(item));
+      
+      // Update itemsOriginal to the new shuffled order
+      itemsOriginal = shuffledItems;
+
       let itemWidth = 0;
-      let currentIndex = 0; // This will now track the logical index of the original items
+      let currentIndex = 0;
       const totalOriginalItems = itemsOriginal.length;
       let itemsVisible = 1;
       let autoPlayInterval;
       let isTransitioning = false;
 
-      // Clone items for infinite loop effect
-      const clonesToPrepend = itemsOriginal.slice(-totalOriginalItems).map(item => item.cloneNode(true));
-      const clonesToAppend = itemsOriginal.slice(0, totalOriginalItems).map(item => item.cloneNode(true));
+      // Clone items for infinite loop effect - create multiple sets to fill screen
+      const clonesNeeded = Math.max(3, Math.ceil(window.innerWidth / 200) + 2); // Ensure enough clones
+      
+      // Create multiple sets of clones for prepend
+      const clonesToPrepend = [];
+      for (let i = 0; i < clonesNeeded; i++) {
+        itemsOriginal.slice().reverse().forEach(item => {
+          clonesToPrepend.push(item.cloneNode(true));
+        });
+      }
+      
+      // Create multiple sets of clones for append
+      const clonesToAppend = [];
+      for (let i = 0; i < clonesNeeded; i++) {
+        itemsOriginal.forEach(item => {
+          clonesToAppend.push(item.cloneNode(true));
+        });
+      }
 
       clonesToPrepend.forEach(clone => inner.insertBefore(clone, itemsOriginal[0]));
       clonesToAppend.forEach(clone => inner.appendChild(clone));
+      
+      // Update offset calculation for multiple clone sets
+      const totalClonesPrepended = clonesToPrepend.length;
 
       const allItems = Array.from(inner.querySelectorAll('.custom-carousel-item'));
       const totalDisplayItems = allItems.length; // Total items including clones
@@ -352,7 +356,7 @@
         }
         // Set initial position to show the first original item
         inner.style.transition = 'none'; // Disable transition for initial jump
-        inner.style.transform = `translateX(-${(totalOriginalItems + currentIndex) * itemWidth}px)`;
+        inner.style.transform = `translateX(-${(totalClonesPrepended + currentIndex) * itemWidth}px)`;
         setTimeout(() => {
             inner.style.transition = 'transform 0.5s ease-in-out'; // Re-enable transition
         }, 50); // Small delay to ensure transition is off for the jump
@@ -367,8 +371,8 @@
             inner.style.transition = 'none';
         }
         // The transform is based on the position within the `allItems` array
-        // which includes prepended clones. `totalOriginalItems` acts as an offset.
-        const targetTranslateX = - (totalOriginalItems + currentIndex) * itemWidth;
+        // which includes prepended clones. `totalClonesPrepended` acts as an offset.
+        const targetTranslateX = - (totalClonesPrepended + currentIndex) * itemWidth;
         inner.style.transform = `translateX(${targetTranslateX}px)`;
 
         if (animate) {
@@ -384,12 +388,12 @@
         if (currentIndex >= totalOriginalItems) { // Reached appended clones (end)
             currentIndex = currentIndex % totalOriginalItems; // Jump to start of original items
             inner.style.transition = 'none';
-            inner.style.transform = `translateX(-${(totalOriginalItems + currentIndex) * itemWidth}px)`;
+            inner.style.transform = `translateX(-${(totalClonesPrepended + currentIndex) * itemWidth}px)`;
             setTimeout(() => { inner.style.transition = 'transform 0.5s ease-in-out'; }, 50);
         } else if (currentIndex < 0) { // Reached prepended clones (start)
             currentIndex = (currentIndex % totalOriginalItems + totalOriginalItems) % totalOriginalItems; // Jump to end of original items
             inner.style.transition = 'none';
-            inner.style.transform = `translateX(-${(totalOriginalItems + currentIndex) * itemWidth}px)`;
+            inner.style.transform = `translateX(-${(totalClonesPrepended + currentIndex) * itemWidth}px)`;
             setTimeout(() => { inner.style.transition = 'transform 0.5s ease-in-out'; }, 50);
         }
       }
