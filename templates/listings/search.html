@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %} 找尋你的兩餸飯店 {% endblock title %}
+
+{% block content %}
+<div class="container mt-5">
+    <form id="restaurantSearchForm" action="{% url 'listings:search' %}" method="GET">
+        <div class="row">
+            <div class="col-md-4 mb-2">
+                <input type="text" name="restaurant_name" class="form-control" placeholder="餐廳名稱 (可選)" value="{{ request.GET.restaurant_name }}">
+            </div>
+            <div class="col-md-4 mb-2">
+                <select name="restaurant_area" class="form-control">
+                    <option value="">選擇地區 (可選)</option>
+                    <option value="Hong Kong" {% if request.GET.restaurant_area == 'Hong Kong' %}selected{% endif %}>香港</option>
+                    <option value="Kowloon" {% if request.GET.restaurant_area == 'Kowloon' %}selected{% endif %}>九龍</option>
+                    <option value="New Territories" {% if request.GET.restaurant_area == 'New Territories' %}selected{% endif %}>新界</option>
+                    <option value="Islands" {% if request.GET.restaurant_area == 'Islands' %}selected{% endif %}>離島</option>
+                </select>
+            </div>
+            <div class="col-md-4 mb-2">
+                <select name="restaurant_district" class="form-control">
+                    <option value="">選擇分區 (可選)</option>
+                    <!-- Options will be populated by JavaScript, and selected based on request.GET.restaurant_district -->
+                </select>
+            </div>
+            <div class="col-md-6 mb-2">
+                <input type="text" name="restaurant_street" class="form-control" placeholder="街道 (可選)" value="{{ request.GET.restaurant_street }}">
+            </div>
+            <div class="col-md-6 mb-2">
+                <input type="text" name="restaurant_address" class="form-control" placeholder="地址 (可選)" value="{{ request.GET.restaurant_address }}">
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-primary btn-block">搜尋</button>
+            </div>
+        </div>
+    </form>
+
+    <hr class="my-4">
+
+    <div class="row" id="listings-container">
+        {% if listings %}
+            {% for listing in listings %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100">
+                        {% if listing.restaurant_photo_main %}
+                            <img class="card-img-top" src="{{ listing.restaurant_photo_main.url }}" alt="{{ listing.restaurant_name }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <img class="card-img-top" src="{% static 'img/default-avatar.png' %}" alt="Default Image" style="height: 200px; object-fit: cover;">
+                        {% endif %}
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ listing.restaurant_name|title }}</h5>
+                            <p class="card-text"><i class="fas fa-map-marker-alt"></i> {{ listing.restaurant_district }}, {{ listing.restaurant_area }}</p>
+                            <p class="card-text">價錢: ${{ listing.two_dish_price|intcomma }}</p>
+                            <!-- Add more listing details here as needed -->
+                            <a href="{% url 'listings:listing' listing.id %}" class="btn btn-primary mt-auto">詳細資料</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <p class="text-center">沒有找到符合條件的兩餸飯。</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+// JavaScript for populating district dropdown, similar to index.html
+// This script needs to be adapted to pre-select options based on request.GET values if they exist
+document.addEventListener('DOMContentLoaded', function() {
+    const regionSelect = document.querySelector('select[name="restaurant_area"]');
+    const districtSelect = document.querySelector('select[name="restaurant_district"]');
+    const currentDistrict = "{{ request.GET.restaurant_district|escapejs }}";
+
+    const chineseToEnglishDistrictMap = {
+        '離島': 'Islands',
+        '葵青': 'Kwai Tsing',
+        '北區': 'North',
+        '西貢': 'Sai Kung',
+        '沙田': 'Sha Tin',
+        '大埔': 'Tai Po',
+        '屯門': 'Tuen Mun',
+        '荃灣': 'Tsuen Wan',
+        '元朗': 'Yuen Long',
+        '九龍城': 'Kowloon City',
+        '觀塘': 'Kwun Tong',
+        '深水埗': 'Sham Shui Po',
+        '黃大仙': 'Wang Tai Sin',
+        '油尖旺': 'Yau Tsim Mong',
+        '中西區': 'Central & Western',
+        '東區': 'Eastern',
+        '南區': 'Southern',
+        '灣仔': 'Wan Chai'
+    };
+
+    const regionDistrictMapping = {
+        'Hong Kong': ['中西區', '東區', '南區', '灣仔'],
+        'Kowloon': ['九龍城', '觀塘', '深水埗', '黃大仙', '油尖旺'],
+        'New Territories': ['葵青', '北區', '西貢', '沙田', '大埔', '荃灣', '屯門', '元朗'],
+        'Islands': ['離島']
+    };
+
+    function populateDistricts(selectedRegion) {
+        districtSelect.innerHTML = '<option value="">選擇分區 (可選)</option>'; // Clear existing options
+        const districtsToDisplay = selectedRegion && regionDistrictMapping[selectedRegion] 
+                                    ? regionDistrictMapping[selectedRegion] 
+                                    : Object.keys(chineseToEnglishDistrictMap);
+
+        districtsToDisplay.forEach(districtChineseName => {
+            const englishValue = chineseToEnglishDistrictMap[districtChineseName];
+            if (englishValue) { 
+                const option = document.createElement('option');
+                option.value = englishValue; 
+                option.textContent = districtChineseName; 
+                if (englishValue === currentDistrict) { // Pre-select if it matches current district
+                    option.selected = true;
+                }
+                districtSelect.appendChild(option);
+            }
+        });
+    }
+
+    // Initial population of districts based on current region (if any)
+    populateDistricts(regionSelect.value);
+
+    regionSelect.addEventListener('change', function(e) {
+        populateDistricts(e.target.value);
+    });
+});
+</script>
+
+{% endblock content %}
