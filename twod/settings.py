@@ -42,12 +42,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    "debug_toolbar",
     'pages.apps.PagesConfig',
     'listings.apps.ListingsConfig',
     'comments.apps.CommentsConfig',
-    'adminusers.apps.AdminusersConfig'
     'foodie.apps.FoodieConfig',
+    'accounts',  # 添加 accounts 应用
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -145,5 +145,5 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
