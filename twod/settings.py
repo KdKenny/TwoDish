@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'pages.apps.PagesConfig',
     'listings.apps.ListingsConfig',
     'comments.apps.CommentsConfig',
+    'adminusers.apps.AdminusersConfig'
     'foodie.apps.FoodieConfig',
 ]
 
