@@ -1,34 +1,59 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib import messages
+from django.contrib import messages, auth
+from django.contrib.auth.models import User
 
-def login_view(request):
-    if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                messages.success(request, f"Welcome back, {username}!")
-                # 登录成功后重定向到首页或用户仪表盘
-                # 修改 'pages:index' 为您希望的重定向目标
-                return redirect('pages:index') 
+
+def register(request):
+    if request.method == "POST":
+        first_name = request.POST["first_name"]
+        last_name = request.POST["last_name"]
+        username = request.POST['username']
+        email = request.POST['email']
+        password = request.POST['password']
+        password2 = request.POST['password2']
+        if password == password2:
+            if User.objects.filter(username=username).exists():
+                messages.error(request, "Username already exists !")
+                return redirect("accounts:register")
             else:
-                messages.error(request, "Invalid username or password.")
+                if User.objects.filter(email=email).exists():
+                    messages.error(request, "Email already exists !")
+                    return redirect("accounts:register")
+                else:
+                    user = User.objects.create_user(username=username, password=password, email=email, first_name=first_name, last_name=last_name) 
+                    user.save()
+                    messages.success(request, "Account created successfully")
+                    return redirect("accounts:login")            
         else:
-            messages.error(request, "Invalid username or password.")
+            messages.error(request, "Password do not match!")
+            return render(request, 'accounts/register.html')
+
     else:
-        form = AuthenticationForm()
-    return render(request, 'accounts/login.html', {'form': form})
+        return render(request, 'accounts/register.html')
 
-# 如果您计划添加注册和登出视图，可以在这里实现它们
-# def register_view(request):
-#     # ... 注册逻辑 ...
-#     pass
+def login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = auth.authenticate(request, username=username, password=password)
+        if user is not None:
+            auth.login(request, user)
+            messages.success(request, "You are now logged in !")
+            return redirect("pages:index")
+        else:
+             messages.error(request, "Invalid credentials !")
+             return redirect("accounts:login")
+    else:
+        return render(request,'accounts/login.html')
 
-# def logout_view(request):
-#     # ... 登出逻辑 ...
-#     pass
+def logout(request):
+    if request.method == "POST":
+        auth.logout(request)
+    return redirect("pages:index")
+
+# def dashboard(request):
+#     user_contacts = Contact.objects.order_by('-contact').filter(user_id=request.user.id)
+#     context = {"contacts" : user_contacts}
+
+#     return render(request,'accounts/dashboard.html', context)
+

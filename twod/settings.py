@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'listings.apps.ListingsConfig',
     'comments.apps.CommentsConfig',
     'foodie.apps.FoodieConfig',
-    'accounts',  # 添加 accounts 应用
+    'accounts.apps.AccountsConfig',  # 添加 accounts 应用
     'debug_toolbar',
 ]
 
