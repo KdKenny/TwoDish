@@ -45,6 +45,7 @@
     <div class="row" id="listings-container">
         {% if listings %}
             {% for listing in listings %}
+                {% if listing.is_published %}
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="card h-100">
                         {% if listing.restaurant_photo_main %}
@@ -61,6 +62,7 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
             {% endfor %}
         {% else %}
             <div class="col-12">
