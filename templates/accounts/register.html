@@ -1,53 +1,94 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %} | 用戶註冊 {% endblock %}
+{% block title %}註冊 - 兩餸飯搜查組{% endblock %}
 
 {% block content %}
-<section id="register" class="bg-light py-5">
+<div class="page-header clear-filter" filter-color="orange">
+  <div class="page-header-image" style="background-image:url({% static 'img/login.jpg' %})"></div>
+  <div class="content">
     <div class="container">
-      <div class="row">
-        <div class="col-md-6 mx-auto">
-          <div class="card">
-            <div class="card-header bg-primary text-white">
-              <h4>
-                <i class="fas fa-user-plus"></i> 註冊帳戶
-              </h4>
+      <div class="col-md-4 ml-auto mr-auto">
+        <div class="card card-login card-plain">
+          <form class="form" method="post" action="{% url 'accounts:register' %}">
+            {% csrf_token %}
+            <div class="card-header text-center">
+              <div class="logo-container">
+                <img src="{% static 'img/now-logo.png' %}" alt="">
+              </div>
             </div>
             <div class="card-body">
-              <!-- Alerts -->
-              {% include 'partials/_alerts.html' %}
-              <form action="{% url 'accounts:register' %}" method="POST">
-                {% csrf_token %}
-                <div class="form-group">
-                  <label for="first_name">名字</label>
-                  <input type="text" name="first_name" class="form-control" required>
+              <h2 class="text-center">註冊帳戶</h2>
+              
+              <!-- 顯示訊息 -->
+              {% if messages %}
+                {% for message in messages %}
+                  <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %}" role="alert">
+                    {{ message }}
+                  </div>
+                {% endfor %}
+              {% endif %}
+
+              <div class="input-group no-border input-lg">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="now-ui-icons users_circle-08"></i></span>
                 </div>
-                <div class="form-group">
-                  <label for="last_name">姓氏</label>
-                  <input type="text" name="last_name" class="form-control" required>
+                <input type="text" name="first_name" class="form-control" placeholder="名字..." required>
+              </div>
+
+              <div class="input-group no-border input-lg">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="now-ui-icons users_circle-08"></i></span>
                 </div>
-                <div class="form-group">
-                  <label for="username">用戶名</label>
-                  <input type="text" name="username" class="form-control" required>
+                <input type="text" name="last_name" class="form-control" placeholder="姓氏..." required>
+              </div>
+
+              <div class="input-group no-border input-lg">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="now-ui-icons users_circle-08"></i></span>
                 </div>
-                <div class="form-group">
-                  <label for="email">電郵</label>
-                  <input type="email" name="email" class="form-control" required>
+                <input type="text" name="username" class="form-control" placeholder="用戶名..." required>
+              </div>
+
+              <div class="input-group no-border input-lg">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="now-ui-icons ui-1_email-85"></i></span>
                 </div>
-                <div class="form-group">
-                  <label for="password">密碼</label>
-                  <input type="password" name="password" class="form-control" required>
+                <input type="email" name="email" class="form-control" placeholder="電郵..." required>
+              </div>
+
+              <div class="input-group no-border input-lg">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="now-ui-icons text_caps-small"></i></span>
                 </div>
-                <div class="form-group">
-                  <label for="password2">確認密碼</label>
-                  <input type="password" name="password2" class="form-control" required>
+                <input type="password" name="password" class="form-control" placeholder="密碼..." required>
+              </div>
+
+              <div class="input-group no-border input-lg">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="now-ui-icons text_caps-small"></i></span>
                 </div>
-                <input type="submit" value="註冊" class="btn btn-secondary btn-block">
-              </form>
+                <input type="password" name="password2" class="form-control" placeholder="確認密碼..." required>
+              </div>
+
             </div>
-          </div>
+            <div class="card-footer text-center">
+              <button type="submit" class="btn btn-primary btn-round btn-lg btn-block">立即註冊</button>
+              <div class="pull-left">
+                <h6>
+                  <a href="{% url 'accounts:login' %}" class="link">已有帳戶？登入</a>
+                </h6>
+              </div>
+              <div class="pull-right">
+                <h6>
+                  <a href="#" class="link">需要幫助?</a>
+                </h6>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</div>
 {% endblock %}

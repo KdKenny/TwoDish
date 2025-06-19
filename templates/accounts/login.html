@@ -1,40 +1,78 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %} | 用戶登入 {% endblock %}
+{% block title %}登入 - 兩餸飯搜查組{% endblock %}
 
 {% block content %}
-<section id="login" class="bg-light py-5">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-6 mx-auto">
-        <div class="card">
-          <div class="card-header bg-primary text-white">
-            <h4>
-              <i class="fas fa-sign-in-alt"></i> 登入
-            </h4>
-          </div>
-          <div class="card-body">
-            {% include 'partials/_alerts.html' %}
-            <form action="{% url 'accounts:login' %}" method="POST">
-              {% csrf_token %}
-              <div class="form-group">
-                <label for="username">用戶名</label>
-                <input type="text" name="username" id="username" class="form-control" required>
+<div class="page-header clear-filter" filter-color="orange">
+  <div class="page-header-image" style="background-image:url({% static 'img/login.jpg' %})"></div>
+  <div class="content">
+    <div class="container">
+      <div class="col-md-4 ml-auto mr-auto">
+        <div class="card card-login card-plain">
+          <form class="form" method="post" action="{% url 'accounts:login' %}">
+            {% csrf_token %}
+            <div class="card-header text-center">
+              <div class="logo-container">
+                <img src="{% static 'img/now-logo.png' %}" alt="">
               </div>
+            </div>
+            <div class="card-body">
+              <h2 class="text-center">登入</h2>
+              
+              <!-- 顯示訊息 -->
+              {% if messages %}
+                {% for message in messages %}
+                  <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %}" role="alert">
+                    {{ message }}
+                  </div>
+                {% endfor %}
+              {% endif %}
 
-              <div class="form-group">
-                <label for="password">密碼</label>
-                <input type="password" name="password" id="password" class="form-control" required>
+              {% if form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                  {{ form.non_field_errors.as_text }}
+                </div>
+              {% endif %}
+
+              <div class="input-group no-border input-lg">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="now-ui-icons users_circle-08"></i></span>
+                </div>
+                <input type="text" name="username" class="form-control" placeholder="用戶名..." required>
               </div>
+              {% if form.username.errors %}
+                <div class="alert alert-danger p-2">{{ form.username.errors.as_text }}</div>
+              {% endif %}
 
-              <input type="submit" value="登入" class="btn btn-secondary btn-block">
-            </form>
-            <hr>
-            <p>還沒有帳戶？ <a href="{% url 'accounts:register' %}" class="btn btn-light btn-sm">立即註冊</a></p>
-          </div>
+              <div class="input-group no-border input-lg">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="now-ui-icons text_caps-small"></i></span>
+                </div>
+                <input type="password" name="password" class="form-control" placeholder="密碼..." required>
+              </div>
+              {% if form.password.errors %}
+                <div class="alert alert-danger p-2">{{ form.password.errors.as_text }}</div>
+              {% endif %}
+
+            </div>
+            <div class="card-footer text-center">
+              <button type="submit" class="btn btn-primary btn-round btn-lg btn-block">立即登入</button>
+              <div class="pull-left">
+                <h6>
+                  <a href="{% url 'accounts:register' %}" class="link">建立帳戶</a>
+                </h6>
+              </div>
+              <div class="pull-right">
+                <h6>
+                  <a href="#" class="link">需要幫助?</a>
+                </h6>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>
   </div>
-</section>
+</div>
 {% endblock %}

@@ -2,7 +2,7 @@ area_choices = {
     'Hong Kong' : "Hong Kong",
     'Kowloon' : "Kowloon",
     'New Territories': 'New Territories',
-    'Island': 'Island'
+    'Islands': 'Islands'
 }
 
 
@@ -18,7 +18,7 @@ district_choices = {
     'Yuen Long' : "Yuen Long",
     'Kowloon City' : "Kowloon City",
     'Kwun Tong' : "Kwun Tong",
-    'Sham Shui Po' : "Shum Shui Po",
+    'Sham Shui Po' : "Sham Shui Po",
     'Wang Tai Sin' : "Wong Tai Sin",
     'Yau Tsim Mong' : "Yau Tsim Mong",
     'Central & Western' : "Central & Western",

@@ -1,730 +1,857 @@
-<!DOCTYPE html>
-<html lang="zh-Hant">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>添加兩餸飯餐廳</title>
-    <style>
-        :root {
-            --primary:#E64A19;
-            --secondary:#E64A19;
-            --light: #f0f4f8;
-            --dark: #333;
-            --success: #28a745;
-            --error: #dc3545;
-        }
-        
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        
-        body {
-            font-family: 'Microsoft JhengHei', '微軟正黑體', sans-serif;
-            line-height: 1.6;
-            color: var(--dark);
-            background-color: #f5f7fa;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-        
-        header {
-            background: var(--primary);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        
-        h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-        
-        .description {
-            font-size: 16px;
-            opacity: 0.9;
-        }
-        
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}新增餐廳 - 兩餸飯搜查組{% endblock %}
+{% block content %}
+<style>
+    .form-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .form-header h1 {
+        color: #333;
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+    .form-header .description {
+        color: #666;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .form-section {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        background-color: #fff;
+    }
+    .section-title {
+        font-size: 1.5rem;
+        color: #fd7e14; /* 橙色 */
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid #fd7e14; /* 橙色 */
+        padding-bottom: 0.5rem;
+    }
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .form-group {
+        flex: 1;
+        min-width: 250px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #333;
+    }
+    .form-group label.required::after {
+        content: ' *';
+        color: #dc3545;
+    }
+    .form-group input[type="text"],
+    .form-group input[type="file"],
+    .form-group input[type="time"],
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+    .checkbox-group, .time-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+    }
+    .checkbox-item {
+        display: flex;
+        align-items: center;
+    }
+    .checkbox-item input[type="checkbox"] {
+        margin-right: 0.5rem;
+    }
+    .time-group > div {
+        flex: 1;
+    }
+    .btn-primary {
+        display: inline-block;
+        background-color: #fd7e14; /* 橙色 */
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        transition: background-color 0.3s;
+    }
+    .btn-primary:hover {
+        background-color: #e67e22; /* 深橙色 */
+    }
+    .btn-submit {
+        display: block;
+        width: 100%;
+        padding: 1rem;
+        background-color: #fd7e14; /* 橙色 */
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    .btn-submit:hover {
+        background-color: #e67e22; /* 深橙色 */
+    }
+    .error-message {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 1rem;
+        border: 1px solid #f5c6cb;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+    }
+    .file-upload-label {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background-color: #f0f0f0;
+        border: 1px dashed #ccc;
+        border-radius: 4px;
+        cursor: pointer;
+        text-align: center;
+        transition: background-color 0.3s, border-color 0.3s;
+    }
+    .file-upload-label:hover {
+        background-color: #e9e9e9;
+        border-color: #aaa;
+    }
+    .file-upload-input {
+        display: none;
+    }
+    .file-upload-text {
+        font-weight: 600;
+        color: #555;
+    }
+    
+    /* 響應式設計 - 手機版 */
+    @media (max-width: 768px) {
         .form-container {
-            padding: 30px;
-        }
-        
-        .error-message {
-            background-color: #ffebee;
-            color: var(--error);
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            border-left: 4px solid var(--error);
-        }
-        
-        .form-section {
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 25px;
-            margin-bottom: 30px;
-            background: white;
-        }
-        
-        .section-title {
-            font-size: 22px;
-            color: var(--primary);
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--light);
+            margin: 1rem;
+            padding: 1rem;
+            max-width: none;
         }
         
         .form-row {
-            display: flex;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-            gap: 20px;
+            flex-direction: column;
+            gap: 1rem;
         }
         
         .form-group {
-            flex: 1;
-            min-width: 250px;
+            min-width: auto;
         }
         
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #555;
+        .checkbox-group, .time-group {
+            flex-direction: column;
+            align-items: flex-start;
         }
         
-        .required::after {
-            content: " *";
-            color: var(--error);
-        }
-        
-        input[type="text"],
-        input[type="number"],
-        input[type="time"],
-        select,
-        textarea {
+        .time-group > div {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-            transition: border-color 0.3s;
         }
         
-        input[type="text"]:focus,
-        input[type="number"]:focus,
-        input[type="time"]:focus,
-        select:focus,
-        textarea:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.2);
+        .section-title {
+            font-size: 1.3rem;
         }
         
-        textarea {
-            min-height: 120px;
-            resize: vertical;
+        .form-header h1 {
+            font-size: 1.5rem;
         }
-        
-        .checkbox-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 10px;
-        }
-        
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            min-width: 120px;
-        }
-        
-        .checkbox-item input {
-            margin-right: 8px;
-            width: auto;
-        }
-        
-        .time-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 5px;
-        }
-        
-        .time-group div {
-            flex: 1;
-            opacity: 1;
-            transition: opacity 0.3s;
-        }
-        
-        .time-group.disabled {
-            opacity: 0.5;
-        }
-        
-        .time-group.disabled input {
-            pointer-events: none;
-            background-color: #f5f5f5;
-        }
-        
-        .image-upload {
-            border: 2px dashed #ddd;
-            padding: 20px;
-            text-align: center;
-            border-radius: 8px;
-            background: #fafafa;
-            margin-top: 10px;
-        }
-        
-        .image-upload p {
-            margin-bottom: 10px;
-            color: #666;
-        }
-        
-        .submit-section {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-        }
-        
-        .submit-btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 14px 35px;
-            font-size: 18px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            font-weight: 600;
-        }
-        
-        .submit-btn:hover {
-            background-color: var(--secondary);
-        }
-        
-        @media (max-width: 768px) {
-            .form-row {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .form-group {
-                min-width: 100%;
-            }
-            
-            .time-group {
-                flex-direction: column;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>添加兩餸飯餐廳信息</h1>
-            <p class="description">請填寫以下餐廳詳細信息，帶 * 的字段為必填項</p>
-        </header>
-
-        <div class="form-container">
-            <a href= {% url "pages:index" %} class="btn btn-light mb-4">Back To Home Page</a>
-            {% if error_message %}
-            <div class="error-message">
-                {{ error_message }}
-            </div>
-            {% endif %}
-            
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                
-                <!-- 基本信息 -->
-                <div class="form-section">
-                    <h2 class="section-title">基本信息</h2>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="restaurant_name" class="required">餐廳名稱</label>
-                            <input type="text" id="restaurant_name" name="restaurant_name" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="restaurant_photo_main">餐廳主圖</label>
-                            <input type="file" id="restaurant_photo_main" name="restaurant_photo_main" accept="image/*">
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 地址信息 -->
-                <div class="form-section">
-                    <h2 class="section-title">地址信息</h2>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="restaurant_area" class="required">地區</label>
-                            <select id="restaurant_area" name="restaurant_area" required>
-                                <option value="">請選擇地區</option>
-                                <option value="HK">香港島</option>
-                                <option value="KL">九龍</option>
-                                <option value="NT">新界</option>
-                                <option value="Islands">離島</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="restaurant_district" class="required">區域</label>
-                            <select id="restaurant_district" name="restaurant_district" required>
-                                <option value="">請選擇區域</option>
-                                <option value="Central">中環</option>
-                                <option value="Wanchai">灣仔</option>
-                                <option value="CausewayBay">銅鑼灣</option>
-                                <option value="TST">尖沙咀</option>
-                                <option value="MK">旺角</option>
-                                <option value="SSP">深水埗</option>
-                                <option value="ST">沙田</option>
-                                <option value="TM">屯門</option>
-                                <!-- 可以添加更多區域 -->
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="restaurant_street">街道</label>
-                            <input type="text" id="restaurant_street" name="restaurant_street">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="restaurant_address" class="required">詳細地址</label>
-                            <input type="text" id="restaurant_address" name="restaurant_address" required>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 营业时间 -->
-                <div class="form-section">
-                    <h2 class="section-title">營業時間</h2>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>營業時段</label>
-                            <div class="checkbox-group">
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="fullday" name="fullday" checked>
-                                    <label for="fullday">全日</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="afternoon" name="afternoon" checked>
-                                    <label for="afternoon">下午</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="night" name="night" checked>
-                                    <label for="night">晚上</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="nightsnack" name="nightsnack" checked>
-                                    <label for="nightsnack">宵夜</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- 全日营业时间 -->
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>全日營業時間</label>
-                            <div class="time-group" id="fullday-time">
-                                <div>
-                                    <label for="openhour_fullday">開始時間</label>
-                                    <input type="time" id="openhour_fullday" name="openhour_fullday">
-                                </div>
-                                <div>
-                                    <label for="closehour_fullday">結束時間</label>
-                                    <input type="time" id="closehour_fullday" name="closehour_fullday">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- 下午营业时间 -->
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>下午營業時間</label>
-                            <div class="time-group" id="afternoon-time">
-                                <div>
-                                    <label for="openhour_afternoon">開始時間</label>
-                                    <input type="time" id="openhour_afternoon" name="openhour_afternoon">
-                                </div>
-                                <div>
-                                    <label for="closehour_afternoon">結束時間</label>
-                                    <input type="time" id="closehour_afternoon" name="closehour_afternoon">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- 晚上营业时间 -->
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>晚上營業時間</label>
-                            <div class="time-group" id="night-time">
-                                <div>
-                                    <label for="openhour_night">開始時間</label>
-                                    <input type="time" id="openhour_night" name="openhour_night">
-                                </div>
-                                <div>
-                                    <label for="closehour_night">結束時間</label>
-                                    <input type="time" id="closehour_night" name="closehour_night">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- 宵夜营业时间 -->
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>宵夜營業時間</label>
-                            <div class="time-group" id="nightsnack-time">
-                                <div>
-                                    <label for="openhour_nightsnack">開始時間</label>
-                                    <input type="time" id="openhour_nightsnack" name="openhour_nightsnack">
-                                </div>
-                                <div>
-                                    <label for="closehour_nightsnack">結束時間</label>
-                                    <input type="time" id="closehour_nightsnack" name="closehour_nightsnack">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 菜式类别 -->
-                <div class="form-section">
-                    <h2 class="section-title">菜式類別</h2>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <div class="checkbox-group">
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="category_chinese" name="category_chinese" checked>
-                                    <label for="category_chinese">中式</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="category_western" name="category_western">
-                                    <label for="category_western">西式</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="category_seafood" name="category_seafood">
-                                    <label for="category_seafood">海鮮</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="category_veg" name="category_veg">
-                                    <label for="category_veg">素食</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="category_japan" name="category_japan">
-                                    <label for="category_japan">日式</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 菜单信息 -->
-                <div class="form-section">
-                    <h2 class="section-title">菜單信息</h2>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="menu">菜單描述</label>
-                            <textarea id="menu" name="menu" placeholder="請輸入菜單描述..."></textarea>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>菜單照片 (最多6張)</label>
-                            <div class="image-upload">
-                                <p>拖放圖片到此處或點擊上傳</p>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <input type="file" name="menu_photo1" accept="image/*">
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="file" name="menu_photo2" accept="image/*">
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="file" name="menu_photo3" accept="image/*">
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <input type="file" name="menu_photo4" accept="image/*">
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="file" name="menu_photo5" accept="image/*">
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="file" name="menu_photo6" accept="image/*">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 价格信息 -->
-                <div class="form-section">
-                    <h2 class="section-title">價格信息</h2>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="two_dish_price" class="required">兩餸價格 (HKD)</label>
-                            <input type="number" id="two_dish_price" name="two_dish_price" min="0" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="three_dish_price">三餸價格 (HKD)</label>
-                            <input type="number" id="three_dish_price" name="three_dish_price" min="0">
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="drink_price">飲品價格 (HKD)</label>
-                            <input type="number" id="drink_price" name="drink_price" min="0">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="soup_price">湯品價格 (HKD)</label>
-                            <input type="number" id="soup_price" name="soup_price" min="0">
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 支付方式 -->
-                <div class="form-section">
-                    <h2 class="section-title">支付方式</h2>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <div class="checkbox-group">
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="payment_cash" name="payment_cash" checked>
-                                    <label for="payment_cash">現金</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="payment_octopus" name="payment_octopus" checked>
-                                    <label for="payment_octopus">八達通</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="payment_alipayhk" name="payment_alipayhk">
-                                    <label for="payment_alipayhk">支付寶香港</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="payment_wechatpay" name="payment_wechatpay">
-                                    <label for="payment_wechatpay">微信支付</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="payment_payeme" name="payment_payeme">
-                                    <label for="payment_payeme">PayMe</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 其他信息 -->
-                <div class="form-section">
-                    <h2 class="section-title">其他信息</h2>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>服務選項</label>
-                            <div class="checkbox-group">
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="dine_in" name="dine_in" checked>
-                                    <label for="dine_in">堂食</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="takeaway" name="takeaway" checked>
-                                    <label for="takeaway">外賣</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="takeaway_self" name="takeaway_self" checked>
-                                    <label for="takeaway_self">自取</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>外賣平台</label>
-                            <div class="checkbox-group">
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="takeaway_keeta" name="takeaway_keeta">
-                                    <label for="takeaway_keeta">Keeta</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="takeaway_foodpanda" name="takeaway_foodpanda">
-                                    <label for="takeaway_foodpanda">Foodpanda</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>其他選項</label>
-                            <div class="checkbox-group">
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="is_published" name="is_published" checked>
-                                    <label for="is_published">發布</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="discount_coupon" name="discount_coupon">
-                                    <label for="discount_coupon">優惠券</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="submit-section">
-                    <button type="submit" class="submit-btn">提交餐廳信息</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    }
     
-    <script>
-        // 动态处理营业时间字段
-        document.addEventListener('DOMContentLoaded', function() {
-            // 设置初始状态
-            toggleTimeFields('fullday', 'fullday-time');
-            toggleTimeFields('afternoon', 'afternoon-time');
-            toggleTimeFields('night', 'night-time');
-            toggleTimeFields('nightsnack', 'nightsnack-time');
-            
-            // 为复选框添加事件监听
-            document.getElementById('fullday').addEventListener('change', function() {
-                toggleTimeFields('fullday', 'fullday-time');
-            });
-            
-            document.getElementById('afternoon').addEventListener('change', function() {
-                toggleTimeFields('afternoon', 'afternoon-time');
-            });
-            
-            document.getElementById('night').addEventListener('change', function() {
-                toggleTimeFields('night', 'night-time');
-            });
-            
-            document.getElementById('nightsnack').addEventListener('change', function() {
-                toggleTimeFields('nightsnack', 'nightsnack-time');
-            });
-            
-            // 地区选择改变时更新区域选项
-            document.getElementById('restaurant_area').addEventListener('change', function() {
-                updateDistrictOptions(this.value);
-            });
-            
-            // 如果之前有错误，回填数据
-            {% if form_data %}
-            const formData = JSON.parse('{{ form_data|escapejs }}');
-            populateForm(formData);
-            {% endif %}
-        });
-        
-        // 切换时间字段的禁用状态
-        function toggleTimeFields(checkboxId, containerId) {
-            const checkbox = document.getElementById(checkboxId);
-            const timeGroup = document.getElementById(containerId);
-            
-            if (checkbox && timeGroup) {
-                if (checkbox.checked) {
-                    timeGroup.classList.remove('disabled');
-                    timeGroup.querySelectorAll('input[type="time"]').forEach(input => {
-                        input.disabled = false;
-                    });
-                } else {
-                    timeGroup.classList.add('disabled');
-                    timeGroup.querySelectorAll('input[type="time"]').forEach(input => {
-                        input.disabled = true;
-                        input.value = ''; // 清空值
-                    });
-                }
-            }
+    /* 響應式設計 - 平板版 */
+    @media (max-width: 1024px) and (min-width: 769px) {
+        .form-container {
+            margin: 1.5rem;
+            padding: 1.5rem;
         }
         
-        // 更新区域选项
-        function updateDistrictOptions(area) {
-            const districtSelect = document.getElementById('restaurant_district');
-            districtSelect.innerHTML = '<option value="">請選擇區域</option>';
-            
-            if (!area) return;
-            
-            // 根据地区添加区域选项
-            const districts = {
-                'HK': ['中環', '灣仔', '銅鑼灣', '北角', '筲箕灣', '香港仔'],
-                'KL': ['尖沙咀', '旺角', '油麻地', '深水埗', '九龍城', '黃大仙'],
-                'NT': ['沙田', '大埔', '粉嶺', '元朗', '屯門', '荃灣'],
-                'Islands': ['長洲', '南丫島', '大嶼山', '坪洲']
-            };
-            
-            const options = districts[area] || [];
-            options.forEach(district => {
-                const option = document.createElement('option');
-                option.value = district;
-                option.textContent = district;
-                districtSelect.appendChild(option);
-            });
+        .form-group {
+            min-width: 200px;
+        }
+    }
+    
+    /* 響應式設計 - 桌面版 */
+    @media (min-width: 1025px) {
+        .form-container {
+            max-width: 1000px;
+            margin: 3rem auto;
+            padding: 3rem;
         }
         
-        // 回填表单数据
-        function populateForm(data) {
-            // 文本输入框
-            const textInputs = document.querySelectorAll('input[type="text"], input[type="number"], input[type="time"], select, textarea');
-            textInputs.forEach(input => {
-                if (data[input.name] !== undefined) {
-                    input.value = data[input.name];
-                }
-            });
+        .form-row {
+            gap: 2rem;
+        }
+        
+        .form-group {
+            min-width: 300px;
+        }
+        
+        .form-section {
+            padding: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-header h1 {
+            font-size: 2.5rem;
+        }
+        
+        .form-header .description {
+            font-size: 1.1rem;
+        }
+    }
+    
+    /* 響應式設計 - 超大螢幕版 */
+    @media (min-width: 1440px) {
+        .form-container {
+            max-width: 90%;
+            padding: 4rem;
+        }
+        
+        .form-row {
+            gap: 2.5rem;
+        }
+        
+        .form-group {
+            min-width: 350px;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+        }
+        
+        .form-header h1 {
+            font-size: 3rem;
+        }
+    }
+    
+    /* 菜單照片網格佈局 */
+    .image-upload {
+        border: 2px dashed #ccc;
+        border-radius: 8px;
+        padding: 2rem;
+        text-align: center;
+        background-color: #fafafa;
+        transition: border-color 0.3s;
+    }
+    
+    .image-upload:hover {
+        border-color: #fd7e14;
+    }
+    
+    .image-upload p {
+        margin-bottom: 1.5rem;
+        color: #666;
+        font-weight: 600;
+    }
+    
+    .photo-grid {
+        display: grid;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .photo-item {
+        position: relative;
+    }
+    
+    .photo-item label {
+        display: block;
+        padding: 1rem;
+        border: 1px dashed #ddd;
+        border-radius: 4px;
+        background-color: #f9f9f9;
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.3s;
+        min-height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .photo-item label:hover {
+        border-color: #fd7e14;
+        background-color: #fff5f0;
+    }
+    
+    .photo-item input[type="file"] {
+        display: none;
+    }
+    
+    /* 響應式網格 - 超大螢幕 6格 */
+    @media (min-width: 1440px) {
+        .photo-grid {
+            grid-template-columns: repeat(6, 1fr);
+        }
+    }
+    
+    /* 響應式網格 - 桌面版 4格 */
+    @media (min-width: 1025px) and (max-width: 1439px) {
+        .photo-grid {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+    
+    /* 響應式網格 - 平板版 3格 */
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .photo-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+    
+    /* 響應式網格 - 小平板 2格 */
+    @media (min-width: 481px) and (max-width: 768px) {
+        .photo-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    /* 響應式網格 - 手機版 1格 */
+    @media (max-width: 480px) {
+        .photo-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="form-container">
+    <div class="form-header">
+        <h1>添加兩餸飯餐廳信息</h1>
+        <p class="description">請填寫以下餐廳詳細信息，帶 * 的字段為必填項</p>
+    </div>
+
+    <a href="/" class="btn btn-primary">返回主页</a>
+    {% if error_message %}
+    <div class="error-message">
+        {{ error_message }}
+    </div>
+    {% endif %}
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <!-- 基本信息 -->
+        <div class="form-section">
+            <h2 class="section-title">基本信息</h2>
             
-            // 复选框
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = data[checkbox.name] === 'on';
-            });
-            
-            // 触发时间字段状态更新
-            toggleTimeFields('fullday', 'fullday-time');
-            toggleTimeFields('afternoon', 'afternoon-time');
-            toggleTimeFields('night', 'night-time');
-            toggleTimeFields('nightsnack', 'nightsnack-time');
-            
-            // 地区选择改变时更新区域选项
-            const areaSelect = document.getElementById('restaurant_area');
-            if (data['restaurant_area']) {
-                areaSelect.value = data['restaurant_area'];
-                updateDistrictOptions(data['restaurant_area']);
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="restaurant_name" class="required">餐廳名稱</label>
+                    <input type="text" id="restaurant_name" name="restaurant_name" required>
+                </div>
                 
-                // 稍等片刻再设置区域值，确保选项已更新
-                setTimeout(() => {
-                    const districtSelect = document.getElementById('restaurant_district');
-                    if (data['restaurant_district']) {
-                        districtSelect.value = data['restaurant_district'];
-                    }
-                }, 100);
-            }
+                <div class="form-group">
+                    <label for="restaurant_photo_main">餐廳主圖</label>
+                    <div class="image-upload" style="padding: 1.5rem;">
+                        <div class="photo-item">
+                            <label for="restaurant_photo_main">
+                                <span>點擊上傳餐廳主圖</span>
+                                <input type="file" id="restaurant_photo_main" name="restaurant_photo_main" accept="image/*">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 地址信息 -->
+        <div class="form-section">
+            <h2 class="section-title">地址信息</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="restaurant_area" class="required">地區</label>
+                    <select id="restaurant_area" name="restaurant_area" required>
+                        <option value="">請選擇地區</option>
+                        <option value="Hong Kong">香港</option>
+                        <option value="Kowloon">九龍</option>
+                        <option value="New Territories">新界</option>
+                        <option value="Islands">離島</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="restaurant_district" class="required">區域</label>
+                    <select id="restaurant_district" name="restaurant_district" required>
+                        <option value="">請選擇區域</option>
+                        <!-- Options will be populated by JavaScript based on selected region -->
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="restaurant_street">街道</label>
+                    <input type="text" id="restaurant_street" name="restaurant_street">
+                </div>
+                
+                <div class="form-group">
+                    <label for="restaurant_address" class="required">詳細地址</label>
+                    <input type="text" id="restaurant_address" name="restaurant_address" required>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 营业时间 -->
+        <div class="form-section">
+            <h2 class="section-title">營業時間</h2>
+            
+            <div class="form-group">
+                <label>營業時段</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="fullday" name="fullday" checked>
+                        <label for="fullday">全日</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="afternoon" name="afternoon" checked>
+                        <label for="afternoon">下午</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="night" name="night" checked>
+                        <label for="night">晚上</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="nightsnack" name="nightsnack" checked>
+                        <label for="nightsnack">宵夜</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <!-- 全日营业时间 -->
+                <div class="form-group">
+                    <label>全日營業時間</label>
+                    <div class="time-group" id="fullday-time">
+                        <div>
+                            <label for="openhour_fullday">開始時間</label>
+                            <input type="time" id="openhour_fullday" name="openhour_fullday" value="10:00">
+                        </div>
+                        <div>
+                            <label for="closehour_fullday">結束時間</label>
+                            <input type="time" id="closehour_fullday" name="closehour_fullday" value="20:00">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 下午营业时间 -->
+                <div class="form-group">
+                    <label>下午營業時間</label>
+                    <div class="time-group" id="afternoon-time">
+                        <div>
+                            <label for="openhour_afternoon">開始時間</label>
+                            <input type="time" id="openhour_afternoon" name="openhour_afternoon">
+                        </div>
+                        <div>
+                            <label for="closehour_afternoon">結束時間</label>
+                            <input type="time" id="closehour_afternoon" name="closehour_afternoon">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <!-- 晚上营业时间 -->
+                <div class="form-group">
+                    <label>晚上營業時間</label>
+                    <div class="time-group" id="night-time">
+                        <div>
+                            <label for="openhour_night">開始時間</label>
+                            <input type="time" id="openhour_night" name="openhour_night">
+                        </div>
+                        <div>
+                            <label for="closehour_night">結束時間</label>
+                            <input type="time" id="closehour_night" name="closehour_night">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 宵夜营业时间 -->
+                <div class="form-group">
+                    <label>宵夜營業時間</label>
+                    <div class="time-group" id="nightsnack-time">
+                        <div>
+                            <label for="openhour_nightsnack">開始時間</label>
+                            <input type="time" id="openhour_nightsnack" name="openhour_nightsnack">
+                        </div>
+                        <div>
+                            <label for="closehour_nightsnack">結束時間</label>
+                            <input type="time" id="closehour_nightsnack" name="closehour_nightsnack">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 菜式类别 -->
+        <div class="form-section">
+            <h2 class="section-title">菜式類別</h2>
+            
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="category_chinese" name="category_chinese" checked>
+                        <label for="category_chinese">中式</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="category_western" name="category_western">
+                        <label for="category_western">西式</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="category_seafood" name="category_seafood">
+                        <label for="category_seafood">海鮮</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="category_veg" name="category_veg">
+                        <label for="category_veg">素食</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="category_japan" name="category_japan">
+                        <label for="category_japan">日式</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 菜单信息 -->
+        <div class="form-section">
+            <h2 class="section-title">菜單信息</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="menu">菜單描述</label>
+                    <textarea id="menu" name="menu" placeholder="請輸入菜單描述..." rows="6"></textarea>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>菜單照片 (最多6張)</label>
+                    <div class="image-upload">
+                        <p>拖放圖片到此處或點擊上傳</p>
+                        <div class="photo-grid">
+                            <div class="photo-item">
+                                <label for="menu_photo1">
+                                    <span>菜單照片 1</span>
+                                    <input type="file" id="menu_photo1" name="menu_photo1" accept="image/*">
+                                </label>
+                            </div>
+                            <div class="photo-item">
+                                <label for="menu_photo2">
+                                    <span>菜單照片 2</span>
+                                    <input type="file" id="menu_photo2" name="menu_photo2" accept="image/*">
+                                </label>
+                            </div>
+                            <div class="photo-item">
+                                <label for="menu_photo3">
+                                    <span>菜單照片 3</span>
+                                    <input type="file" id="menu_photo3" name="menu_photo3" accept="image/*">
+                                </label>
+                            </div>
+                            <div class="photo-item">
+                                <label for="menu_photo4">
+                                    <span>菜單照片 4</span>
+                                    <input type="file" id="menu_photo4" name="menu_photo4" accept="image/*">
+                                </label>
+                            </div>
+                            <div class="photo-item">
+                                <label for="menu_photo5">
+                                    <span>菜單照片 5</span>
+                                    <input type="file" id="menu_photo5" name="menu_photo5" accept="image/*">
+                                </label>
+                            </div>
+                            <div class="photo-item">
+                                <label for="menu_photo6">
+                                    <span>菜單照片 6</span>
+                                    <input type="file" id="menu_photo6" name="menu_photo6" accept="image/*">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 价格信息 -->
+        <div class="form-section">
+            <h2 class="section-title">價格信息</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="two_dish_price" class="required">兩餸價格 (HKD)</label>
+                    <input type="number" id="two_dish_price" name="two_dish_price" min="0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="three_dish_price">三餸價格 (HKD)</label>
+                    <input type="number" id="three_dish_price" name="three_dish_price" min="0">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="drink_price">飲品價格 (HKD)</label>
+                    <input type="number" id="drink_price" name="drink_price" min="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="soup_price">湯品價格 (HKD)</label>
+                    <input type="number" id="soup_price" name="soup_price" min="0">
+                </div>
+            </div>
+        </div>
+        
+        <!-- 支付方式 -->
+        <div class="form-section">
+            <h2 class="section-title">支付方式</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="payment_cash" name="payment_cash" checked>
+                            <label for="payment_cash">現金</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="payment_octopus" name="payment_octopus" checked>
+                            <label for="payment_octopus">八達通</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="payment_alipayhk" name="payment_alipayhk">
+                            <label for="payment_alipayhk">支付寶香港</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="payment_wechatpay" name="payment_wechatpay">
+                            <label for="payment_wechatpay">微信支付</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="payment_payeme" name="payment_payeme">
+                            <label for="payment_payeme">PayMe</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 其他信息 -->
+        <div class="form-section">
+            <h2 class="section-title">其他信息</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>服務選項</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="dine_in" name="dine_in" checked>
+                            <label for="dine_in">堂食</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="takeaway" name="takeaway" checked>
+                            <label for="takeaway">外賣</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="takeaway_self" name="takeaway_self" checked>
+                            <label for="takeaway_self">自取</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>外賣平台</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="takeaway_keeta" name="takeaway_keeta">
+                            <label for="takeaway_keeta">Keeta</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="takeaway_foodpanda" name="takeaway_foodpanda">
+                            <label for="takeaway_foodpanda">Foodpanda</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>其他選項</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="discount_coupon" name="discount_coupon">
+                            <label for="discount_coupon">優惠券</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="submit-section">
+            <button type="submit" class="btn-submit">提交餐廳信息</button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const timeSections = {
+        'fullday': document.getElementById('fullday-time'),
+        'afternoon': document.getElementById('afternoon-time'),
+        'night': document.getElementById('night-time'),
+        'nightsnack': document.getElementById('nightsnack-time')
+    };
+
+    function toggleTimeInputs(sectionId, isChecked) {
+        const timeSection = timeSections[sectionId];
+        const inputs = timeSection.querySelectorAll('input[type="time"]');
+        const labels = timeSection.querySelectorAll('label');
+        
+        if (isChecked) {
+            // 啟用狀態
+            timeSection.style.opacity = '1';
+            timeSection.style.pointerEvents = 'auto';
+            inputs.forEach(input => {
+                input.disabled = false;
+                input.style.backgroundColor = '';
+                input.style.cursor = '';
+                input.style.border = '';
+            });
+            labels.forEach(label => {
+                label.style.color = '';
+            });
+        } else {
+            // 禁用狀態 - 但保持輸入功能
+            timeSection.style.opacity = '0.6';
+            timeSection.style.pointerEvents = 'auto'; // 保持可點擊
+            inputs.forEach(input => {
+                input.disabled = false; // 完全可用
+                input.style.backgroundColor = '#f8f9fa';
+                input.style.cursor = 'pointer';
+                input.style.border = '1px solid #dee2e6';
+            });
+            labels.forEach(label => {
+                label.style.color = '#6c757d';
+            });
         }
-    </script>
-</body>
-</html>
+    }
+
+    Object.keys(timeSections).forEach(sectionId => {
+        const checkbox = document.getElementById(sectionId);
+        
+        if (checkbox) {
+            // Set initial state
+            toggleTimeInputs(sectionId, checkbox.checked);
+
+            // Add event listener
+            checkbox.addEventListener('change', function() {
+                toggleTimeInputs(sectionId, this.checked);
+            });
+        }
+    });
+
+    // 地區和區域聯動功能
+    const regionSelect = document.querySelector('select[name="restaurant_area"]');
+    const districtSelect = document.querySelector('select[name="restaurant_district"]');
+
+    const chineseToEnglishDistrictMap = {
+        '離島': 'Islands',
+        '葵青': 'Kwai Tsing',
+        '北區': 'North',
+        '西貢': 'Sai Kung',
+        '沙田': 'Sha Tin',
+        '大埔': 'Tai Po',
+        '屯門': 'Tuen Mun',
+        '荃灣': 'Tsuen Wan',
+        '元朗': 'Yuen Long',
+        '九龍城': 'Kowloon City',
+        '觀塘': 'Kwun Tong',
+        '深水埗': 'Sham Shui Po',
+        '黃大仙': 'Wang Tai Sin',
+        '油尖旺': 'Yau Tsim Mong',
+        '中西區': 'Central & Western',
+        '東區': 'Eastern',
+        '南區': 'Southern',
+        '灣仔': 'Wan Chai'
+    };
+
+    const regionDistrictMapping = {
+        'Hong Kong': ['中西區', '東區', '南區', '灣仔'],
+        'Kowloon': ['九龍城', '觀塘', '深水埗', '黃大仙', '油尖旺'],
+        'New Territories': ['葵青', '北區', '西貢', '沙田', '大埔', '荃灣', '屯門', '元朗'],
+        'Islands': ['離島']
+    };
+
+    function populateDistricts(selectedRegion) {
+        districtSelect.innerHTML = '<option value="">請選擇區域</option>'; // Clear existing options
+        
+        if (selectedRegion && regionDistrictMapping[selectedRegion]) {
+            const districts = regionDistrictMapping[selectedRegion];
+            districts.forEach(districtChineseName => {
+                const englishValue = chineseToEnglishDistrictMap[districtChineseName];
+                if (englishValue) {
+                    const option = document.createElement('option');
+                    option.value = englishValue;
+                    option.textContent = districtChineseName;
+                    districtSelect.appendChild(option);
+                }
+            });
+        }
+    }
+
+    // 監聽地區選擇變化
+    regionSelect.addEventListener('change', function(e) {
+        populateDistricts(e.target.value);
+    });
+
+    // 文件上傳視覺反饋
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    fileInputs.forEach(input => {
+        input.addEventListener('change', function(e) {
+            const label = this.parentElement.querySelector('span');
+            const fileName = this.files[0] ? this.files[0].name : null;
+            
+            if (fileName) {
+                // 顯示文件名並改變樣式
+                label.textContent = `已選擇: ${fileName}`;
+                label.style.color = '#28a745';
+                label.style.fontWeight = 'bold';
+                this.parentElement.style.borderColor = '#28a745';
+                this.parentElement.style.backgroundColor = '#f8fff9';
+            } else {
+                // 恢復原始狀態
+                const originalText = this.id === 'restaurant_photo_main' ? '點擊上傳餐廳主圖' : `菜單照片 ${this.id.slice(-1)}`;
+                label.textContent = originalText;
+                label.style.color = '';
+                label.style.fontWeight = '';
+                this.parentElement.style.borderColor = '';
+                this.parentElement.style.backgroundColor = '';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
