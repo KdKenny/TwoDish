@@ -4,6 +4,27 @@ from comments.models import comment_rate, CommentRating
 from django.contrib import messages
 from django.utils import timezone
 import json
+from comments.forms import CommentForm
+
+def editcomment(request, comment_id):
+    comment = get_object_or_404(comment_rate, pk=comment_id)
+    if request.meothd == POST:
+        form = CommentForm(request,POST,instance=comment)
+        if form.is_valid():
+            form.save()
+            return redirect(request, 'accounts:dashboard')
+    else:
+        form = CommentForm(instance=comment)
+    return render(request, 'comments/editcomment.html', {'form': form})
+
+def deletecomment(request, comment_id):  
+    comment = get_object_or_404(comment_rate, pk=comment_id)
+    comment.delete()
+    return redirect("accounts:dashboard")
+    
+
+    return render(request, 'comments/viewcomment.html')
+
 
 def addcomment(request):
     if request.method == "POST":
