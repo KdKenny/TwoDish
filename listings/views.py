@@ -7,6 +7,8 @@ from listings.choices import area_choices, district_choices
 from django.contrib import messages
 from django.db.models import Avg
 import json
+from django.contrib.auth import authenticate, login # 导入 authenticate 和 login
+from django.contrib.auth.forms import AuthenticationForm # 导入 Django 内置的登录表单
 
 
 def listing(request,listing_id):
@@ -181,6 +183,24 @@ def add_restaurant(request):
 def success_page(request):
     return render(request, 'success.html')
 
+
+def login_view(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.info(request, f"You are now logged in as {username}.")
+                return redirect('pages:index')  # 登录成功后重定向到首页
+            else:
+                messages.error(request,"Invalid username or password.")
+        else:
+            messages.error(request,"Invalid username or password.")
+    form = AuthenticationForm()
+    return render(request, 'listings/login.html', {'form': form})
 
 
 # Create your views here.

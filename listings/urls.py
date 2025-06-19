@@ -5,5 +5,6 @@ app_name = 'listings'
 urlpatterns = [
     path('<int:listing_id>', views.listing, name='listing'),
     path('search', views.search, name='search'),
-    path('add_restaruant', views.add_restaurant, name='add_restaurant')
+    path('add_restaruant', views.add_restaurant, name='add_restaurant'),
+    path('login/', views.login_view, name='login'), # Add this line
 ]
