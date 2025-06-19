@@ -187,6 +187,7 @@
     
     {% if comments_with_ratings %}
       {% for item in comments_with_ratings %}
+        {% if item.comment.is_published %}
         <div class="card mb-3" style="background-color: #FFE4B5; color: #000000; font-size: 1.1em;">
           <div class="card-body">
             <h5 class="card-title" style="color: #000000;">{{ item.comment.foodie_name }}</h5>
@@ -249,6 +250,7 @@
             </div>
           </div>
         </div>
+        {% endif %}
       {% endfor %}
     {% else %}
       <p>尚無評論</p>
