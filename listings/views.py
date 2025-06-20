@@ -167,6 +167,9 @@ def add_restaurant(request):
             # 保存到数据库
             new_restaurant.save()
             
+            # 添加成功消息
+            messages.success(request, '多謝你添加餐廳，管理員會盡快批核餐廳資料！')
+            
             # 重定向到成功页面
             return redirect("pages:index")
         

@@ -8,11 +8,12 @@ from comments.forms import CommentForm
 
 def editcomment(request, comment_id):
     comment = get_object_or_404(comment_rate, pk=comment_id)
-    if request.meothd == POST:
-        form = CommentForm(request,POST,instance=comment)
+    if request.method == 'POST':  # 修復: request.meothd -> request.method, POST -> 'POST'
+        form = CommentForm(request.POST, instance=comment)  # 修復: request,POST -> request.POST
         if form.is_valid():
             form.save()
-            return redirect(request, 'accounts:dashboard')
+            messages.success(request, '評論已成功更新！')
+            return redirect('accounts:dashboard')  # 修復: redirect(request, ...) -> redirect(...)
     else:
         form = CommentForm(instance=comment)
     return render(request, 'comments/editcomment.html', {'form': form})
@@ -20,6 +21,7 @@ def editcomment(request, comment_id):
 def deletecomment(request, comment_id):  
     comment = get_object_or_404(comment_rate, pk=comment_id)
     comment.delete()
+    messages.success(request, '評論已成功刪除！')
     return redirect("accounts:dashboard")
     
 
@@ -34,7 +36,13 @@ def addcomment(request):
         restaurant_rating = request.POST["restaurant_rating"]
         edit_date = timezone.now().date()
 
-
+        # 先定義 foodie_name_id 和 foodie_name
+        if request.user.is_authenticated:
+            foodie_name_id = request.user.id
+            foodie_name = f"{request.user.first_name} {request.user.last_name}"
+        else:
+            foodie_name_id = 0  # guest is 0
+            foodie_name = "guest"
 
         # 檢查是否是評分評論的請求
         if "comment_rating" in request.POST and request.POST["comment_rating"]:
@@ -57,31 +65,15 @@ def addcomment(request):
                     existing_rating.save()
                     messages.success(request, "您的評分已更新")
                 else:
-                    
-                    if request.user.is_authenticated:
-                        foodie_name_id = request.user.id
-                        foodie_name = f"{request.user.first_name} {request.user.last_name}"
-                    else:
-                        foodie_name_id = 0  # guest is 0
-                        foodie_name = "guest"
-                    
                     # 創建新評分
                     CommentRating.objects.create(
-                    comment=target_comment,
-                    rater_id=foodie_name_id,
-                    rater_name=foodie_name,
-                    rating=comment_rating_value
+                        comment=target_comment,
+                        rater_id=foodie_name_id,
+                        rater_name=foodie_name,
+                        rating=comment_rating_value
                     )
                     messages.success(request, "評分已提交")
         else:
-
-            if request.user.is_authenticated:
-                foodie_name_id = request.user.id
-                foodie_name = f"{request.user.first_name} {request.user.last_name}"
-            else:
-                foodie_name_id = 0  # guest is 0
-                foodie_name = "guest"           
-                        
             # 這是添加新評論的請求
             new_comments = comment_rate(
                 two_dish_rice_id=two_dish_rice_id, 

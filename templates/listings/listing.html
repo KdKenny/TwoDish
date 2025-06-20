@@ -33,15 +33,17 @@
           <div class="col-md-9">
             <!-- Home Main Image -->
             {% comment %}  {% endcomment %}
-            <img
-                class="card-img-top"
-                {% if listing.restaurant_photo_main %}
-                src="{{ listing.restaurant_photo_main.url }}"
-                {% else %}
-                src="{% static 'images/default_restaurant.jpg' %}"
-                {% endif %}
-                alt="Restaurant photo"
-              />
+            <a href="{% if listing.restaurant_photo_main %}{{ listing.restaurant_photo_main.url }}{% else %}{% static 'images/default_restaurant.jpg' %}{% endif %}" data-lightbox="main-photo">
+              <img
+                  class="card-img-top"
+                  {% if listing.restaurant_photo_main %}
+                  src="{{ listing.restaurant_photo_main.url }}"
+                  {% else %}
+                  src="{% static 'images/default_restaurant.jpg' %}"
+                  {% endif %}
+                  alt="Restaurant photo"
+                />
+            </a>
             <!-- Thumbnails -->
             <div class="row mb-5 thumbs">
               {% if listing.menu_photo1 %}

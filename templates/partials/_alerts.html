@@ -18,6 +18,12 @@
 </div>
 {% endfor %}
 
-<!-- End Message -->
-
+<!-- 添加自動消失功能 -->
+<script>
+$(document).ready(function() {
+    setTimeout(function() {
+        $('.alert').fadeOut('slow');
+    }, 3000);
+});
+</script>
 {% endif %}
