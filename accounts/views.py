@@ -30,7 +30,7 @@ def register(request):
                     user = User.objects.create_user(username=username, password=password, email=email, first_name=first_name, last_name=last_name) 
                     user.save()
                     messages.success(request, "Account created successfully")
-                    return redirect("accounts:login")            
+                    return redirect("foodie:add_foodie", user.id)            
         else:
             messages.error(request, "Password do not match!")
             return render(request, 'accounts/register.html')
