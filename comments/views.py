@@ -8,11 +8,12 @@ from comments.forms import CommentForm
 
 def editcomment(request, comment_id):
     comment = get_object_or_404(comment_rate, pk=comment_id)
-    if request.meothd == POST:
-        form = CommentForm(request,POST,instance=comment)
+    if request.method == 'POST':  # 修復: request.meothd -> request.method, POST -> 'POST'
+        form = CommentForm(request.POST, instance=comment)  # 修復: request,POST -> request.POST
         if form.is_valid():
             form.save()
-            return redirect(request, 'accounts:dashboard')
+            messages.success(request, '評論已成功更新！')
+            return redirect('accounts:dashboard')  # 修復: redirect(request, ...) -> redirect(...)
     else:
         form = CommentForm(instance=comment)
     return render(request, 'comments/editcomment.html', {'form': form})
@@ -20,6 +21,7 @@ def editcomment(request, comment_id):
 def deletecomment(request, comment_id):  
     comment = get_object_or_404(comment_rate, pk=comment_id)
     comment.delete()
+    messages.success(request, '評論已成功刪除！')
     return redirect("accounts:dashboard")
     
 

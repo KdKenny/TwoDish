@@ -42,7 +42,7 @@
               <tr>
                 <th scope="col">#</th>
                 <th scope="col">Comment</th>
-                <th></th>
+                <th scope="col">操作</th>  <!-- 修改表頭 -->
               </tr>
             </thead>
             <tbody>
@@ -51,7 +51,15 @@
                 <td>{{comment.id}}</td>
                 <td>{{comment.comment}}</td>
                 <td>
-
+                  <!-- 添加edit和delete按鈕 -->
+                  <a href="{% url 'comments:editcomment' comment.id %}" class="btn btn-sm btn-primary mr-2">
+                    <i class="fas fa-edit"></i> 編輯
+                  </a>
+                  <a href="{% url 'comments:deletecomment' comment.id %}" 
+                     class="btn btn-sm btn-danger" 
+                     onclick="return confirm('確定要刪除這個評論嗎？')">
+                    <i class="fas fa-trash"></i> 刪除
+                  </a>
                 </td>
               </tr>  
                {% endfor %}
