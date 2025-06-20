@@ -23,9 +23,6 @@ def deletecomment(request, comment_id):
     comment.delete()
     messages.success(request, '評論已成功刪除！')
     return redirect("accounts:dashboard")
-    
-
-    return render(request, 'comments/viewcomment.html')
 
 
 def addcomment(request):
@@ -36,10 +33,23 @@ def addcomment(request):
         restaurant_rating = request.POST["restaurant_rating"]
         edit_date = timezone.now().date()
 
+        # 在 comments/views.py 中修改第 36-42 行
+        from foodie.models import Contact
+        
         # 先定義 foodie_name_id 和 foodie_name
         if request.user.is_authenticated:
-            foodie_name_id = request.user.id
-            foodie_name = f"{request.user.first_name} {request.user.last_name}"
+            try:
+                # 獲取對應的 Contact 記錄
+                contact = Contact.objects.get(user=request.user)
+                foodie_name_id = contact.id  # 使用 Contact 的 ID
+                foodie_name = contact.foodie_name  # 使用 Contact 的 foodie_name
+            except Contact.DoesNotExist:
+                # 重定向到建立 Contact 頁面，而不是使用 foodie_name_id = 0
+                messages.warning(request, "請先完善您的個人資料")
+                return redirect('foodie:add_foodie')
+                # 如果用戶沒有 Contact 記錄，使用 User 資料
+                foodie_name_id = 0
+                foodie_name = f"{request.user.first_name} {request.user.last_name}"
         else:
             foodie_name_id = 0  # guest is 0
             foodie_name = "guest"

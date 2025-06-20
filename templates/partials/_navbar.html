@@ -5,6 +5,9 @@
       <a class="navbar-brand" href="{% url 'pages:index' %}">
         <span class="h3"><i class="fas fa-home"></i> HOME</span>
       </a>
+      <a class="navbar-brand" href="{% url 'pages:news' %}">
+        <span class="h3"><i class="fas fa-newspaper"></i> NEWS</span>
+      </a>
       {% comment %} fix link {% endcomment %}
       <a class="navbar-brand" href="{% url 'listings:add_restaurant' %}">
         <span class="h4"><i class="now-ui-icons shopping_shop"></i> 添加兩餸飯餐廳店</span>
@@ -24,11 +27,21 @@
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <i class="now-ui-icons users_circle-08"></i>
-              <p>User Menu</p>
+              <p>{{ user.username }} 的選單</p>
             </a>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
               <a class="dropdown-item" href="{% url 'accounts:dashboard' %}">Dashboard</a>
               <a class="dropdown-item" href="{% url 'password_change' %}">更改會員密碼</a>
+              {% if user.is_authenticated %}
+                {% with user.contact as foodie %}
+                  {% if foodie %}
+                    <a class="dropdown-item" href="{% url 'foodie:view_foodie' foodie.id %}">查看個人資料</a>
+                  {% else %}
+                    <a class="dropdown-item" href="{% url 'foodie:add_foodie' %}">建立個人資料</a>
+                  {% endif %}
+                {% endwith %}
+              {% endif %}
+              <a class="dropdown-item" href="{% url 'foodie:edit_foodie' %}">修改個人資料</a>
               <a class="dropdown-item" href="{% url 'listings:add_restaurant' %}">添加兩餸飯店鋪</a>
             </div>
           </li>

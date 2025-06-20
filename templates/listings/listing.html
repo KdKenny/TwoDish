@@ -192,7 +192,19 @@
         {% if item.comment.is_published %}
         <div class="card mb-3" style="background-color: #FFE4B5; color: #000000; font-size: 1.1em;">
           <div class="card-body">
-            <h5 class="card-title" style="color: #000000;">{{ item.comment.foodie_name }}</h5>
+            <h5 class="card-title" style="color: #000000;">
+              {% if item.comment.foodie_name_id == 0 %}
+                <!-- 訪客留言 -->
+                <span style="color: #999999; font-style: italic;">
+                  <i class="fas fa-user-secret"></i> {{ item.comment.foodie_name }} (訪客)
+                </span>
+              {% else %}
+                <!-- 註冊用戶留言 -->
+                <a href="{% url 'foodie:view_foodie' item.comment.foodie_name_id %}" style="color: #0066FF; text-decoration: none;">
+                  <i class="fas fa-user"></i> {{ item.comment.foodie_name }}
+                </a>
+              {% endif %}
+            </h5>
             <h6 class="card-subtitle mb-2 text-muted" style="color: #666666;">{{ item.comment.list_date }}</h6>
             <p class="card-text" style="color: #000000;">{{ item.comment.comment }}</p>
             <p class="card-text"><span style="color: #0066FF; font-size: 1.3em; font-weight: bold;">餐廳評分: {{ item.comment.restaurant_rating }}/5</span></p>
@@ -218,7 +230,13 @@
           <div class="modal-dialog" role="document">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="rateCommentModalLabel{{ item.comment.id }}">為 {{ item.comment.foodie_name }} 的評論評分</h5>
+                <h5 class="modal-title" id="rateCommentModalLabel{{ item.comment.id }}">
+                  {% if item.comment.foodie_name_id == 0 %}
+                    為訪客 {{ item.comment.foodie_name }} 的評論評分
+                  {% else %}
+                    為 {{ item.comment.foodie_name }} 的評論評分
+                  {% endif %}
+                </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>

@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} | 最新消息{% endblock %}
+
+{% block content %}
+<div class="wrapper">
+    <div class="page-header clear-filter" filter-color="orange" style="height: 400px; min-height: 400px;">
+        <div class="page-header-image" data-parallax="true" style="background-image: url('https://via.placeholder.com/1920x400/FF6B6B/FFFFFF?text=兩餸飯最新消息'); height: 400px;">
+        </div>
+        <div class="container">
+            <div class="content-center brand">
+                <h1 class="h1-seo">兩餸飯最新消息</h1>
+                <h3>掌握最新兩餸飯資訊與優惠</h3>
+            </div>
+        </div>
+    </div>
+    
+    <div class="main">
+        <!-- 優惠券區域 -->
+        <div class="section section-coupons" style="padding: 70px 0;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2 class="title text-center">🎫 限時優惠券</h2>
+                        <p class="description text-center">立即領取專屬優惠，享受更多美味兩餸飯！</p>
+                    </div>
+                </div>
+                <div class="row">
+                    {% for coupon in coupons %}
+                    <div class="col-md-4">
+                        <div class="card card-coupon {{ coupon.color }}" style="margin-bottom: 30px; border-radius: 15px; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.15);">
+                            <div class="card-body text-white text-center" style="padding: 30px 20px;">
+                                <h5 class="card-title" style="font-size: 1.2rem; margin-bottom: 10px;">{{ coupon.title }}</h5>
+                                <h3 class="discount-text" style="font-size: 2rem; font-weight: bold; margin: 15px 0;">{{ coupon.discount }}</h3>
+                                <p class="card-text" style="margin-bottom: 20px;">{{ coupon.description }}</p>
+                                <div class="coupon-code" style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; margin: 15px 0;">
+                                    <strong>優惠碼：{{ coupon.code }}</strong>
+                                </div>
+                                <small>有效期至：{{ coupon.expiry }}</small><br>
+                                <button class="btn btn-white btn-round" style="margin-top: 15px;" onclick="copyCode('{{ coupon.code }}')">複製優惠碼</button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- 新聞區域 -->
+        <div class="section section-news" style="padding: 70px 0; background: #f8f9fa;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2 class="title text-center">📰 最新消息</h2>
+                        <p class="description text-center">了解兩餸飯界的最新動態與趣聞</p>
+                    </div>
+                </div>
+                <div class="row">
+                    {% for news in news_list %}
+                    <div class="col-md-4">
+                        <div class="card card-blog" style="margin-bottom: 30px; border-radius: 15px; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.1); transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+                            <div class="card-image">
+                                <img class="img" src="{{ news.image }}" alt="{{ news.title }}" style="height: 200px; object-fit: cover;">
+                            </div>
+                            <div class="card-body" style="padding: 25px;">
+                                <h6 class="card-category text-info">{{ news.date }}</h6>
+                                <h5 class="card-title">{{ news.title }}</h5>
+                                <p class="card-description">{{ news.summary }}</p>
+                                <button class="btn btn-primary btn-round" onclick="showNewsDetail('{{ news.title }}', '{{ news.content }}', '{{ news.image }}')">閱讀更多</button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- 特色推薦區域 -->
+        <div class="section section-featured" style="padding: 70px 0;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2 class="title text-center">🌟 本週精選</h2>
+                        <p class="description text-center">編輯推薦的優質兩餸飯餐廳</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card card-featured" style="border-radius: 15px; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.1);">
+                            <div class="card-image">
+                                <img src="https://via.placeholder.com/500x300/FFA726/FFFFFF?text=精選餐廳" alt="精選餐廳" style="height: 250px; object-fit: cover;">
+                            </div>
+                            <div class="card-body" style="padding: 25px;">
+                                <h4>金記兩餸飯</h4>
+                                <p>傳承三代的經典口味，每日新鮮製作，是附近上班族的最愛選擇。招牌菜式包括蜜汁叉燒和白切雞。</p>
+                                <div class="rating">
+                                    <i class="fa fa-star text-warning"></i>
+                                    <i class="fa fa-star text-warning"></i>
+                                    <i class="fa fa-star text-warning"></i>
+                                    <i class="fa fa-star text-warning"></i>
+                                    <i class="fa fa-star text-warning"></i>
+                                    <span class="ml-2">4.8/5</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card card-featured" style="border-radius: 15px; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.1);">
+                            <div class="card-image">
+                                <img src="https://via.placeholder.com/500x300/66BB6A/FFFFFF?text=健康之選" alt="健康之選" style="height: 250px; object-fit: cover;">
+                            </div>
+                            <div class="card-body" style="padding: 25px;">
+                                <h4>健康兩餸飯</h4>
+                                <p>主打低鹽低油的健康烹調方式，使用有機蔬菜和優質肉類，讓您吃得美味又健康。</p>
+                                <div class="rating">
+                                    <i class="fa fa-star text-warning"></i>
+                                    <i class="fa fa-star text-warning"></i>
+                                    <i class="fa fa-star text-warning"></i>
+                                    <i class="fa fa-star text-warning"></i>
+                                    <i class="fa fa-star-half text-warning"></i>
+                                    <span class="ml-2">4.6/5</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 新聞詳情模態框 -->
+<div class="modal fade" id="newsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newsModalTitle"></h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img id="newsModalImage" class="img-fluid mb-3" style="border-radius: 10px;">
+                <p id="newsModalContent"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyCode(code) {
+    navigator.clipboard.writeText(code).then(function() {
+        alert('優惠碼已複製：' + code);
+    });
+}
+
+function showNewsDetail(title, content, image) {
+    document.getElementById('newsModalTitle').textContent = title;
+    document.getElementById('newsModalContent').textContent = content;
+    document.getElementById('newsModalImage').src = image;
+    $('#newsModal').modal('show');
+}
+</script>
+
+<style>
+.card-coupon {
+    position: relative;
+    overflow: hidden;
+}
+
+.card-coupon::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: rotate(45deg);
+    transition: all 0.6s;
+    opacity: 0;
+}
+
+.card-coupon:hover::before {
+    animation: shine 0.6s ease-in-out;
+}
+
+@keyframes shine {
+    0% {
+        opacity: 0;
+        transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(100%) translateY(100%) rotate(45deg);
+    }
+}
+
+.card-blog:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+}
+</style>
+{% endblock %}
