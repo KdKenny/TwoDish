@@ -1,2 +1,241 @@
-<h1>hello</h1>
+{% extends 'base.html' %}
+{% load static %}
 
+{% block title %}完善個人資料 - 兩餸飯搜查組{% endblock %}
+
+{% block content %}
+<div class="page-header clear-filter" filter-color="orange">
+  <div class="page-header-image" style="background-image:url({% static 'img/login.jpg' %})"></div>
+  <div class="content">
+    <div class="container">
+      <div class="col-md-6 ml-auto mr-auto">
+        <div class="card card-login card-plain">
+          <form class="form" method="post" 
+                action="{% if is_edit %}{% url 'foodie:edit_foodie' %}{% else %}{% url 'foodie:add_foodie' %}{% endif %}" 
+                enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="card-header text-center">
+              <div class="logo-container">
+                <img src="{% static 'img/now-logo.png' %}" alt="">
+              </div>
+            </div>
+            <div class="card-body">
+              <h2 class="text-center text-danger">完善個人資料</h2>
+              <p class="text-center text-danger">讓其他會員更了解你！</p>
+              
+              <!-- 顯示訊息 -->
+              {% if messages %}
+                {% for message in messages %}
+                  <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %}" role="alert">
+                    {{ message }}
+                  </div>
+                {% endfor %}
+              {% endif %}
+
+              <!-- 個人頭像 -->
+              <div class="input-group no-border input-lg">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="now-ui-icons users_single-02"></i></span>
+                </div>
+                <input type="file" name="profile_photo" class="form-control" accept="image/*">
+              </div>
+              <small class="form-text text-dark">上傳個人頭像 (可選)</small>
+
+              <!-- 暱稱 -->
+              <div class="input-group no-border input-lg">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="now-ui-icons users_circle-08"></i></span>
+                </div>
+                <h2 class="card-title" style="color: #333;">
+                  {% if is_edit %}修改個人資料{% else %}建立個人資料{% endif %}
+                </h2>
+                
+                <!-- 在各個輸入欄位中添加 value 屬性 -->
+                <input type="text" id="nickname" name="nickname" 
+                       value="{% if is_edit %}{{ foodie.foodie_name }}{% endif %}" 
+                       placeholder="請輸入您的暱稱..." required>
+              </div>
+
+              <!-- 年齡範圍 - 使用正確的選項 -->
+              <div class="input-group no-border input-lg">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="now-ui-icons ui-1_calendar-60"></i></span>
+                </div>
+                <select name="age_range" class="form-control" style="font-size: 16px; padding: 12px;" required>
+                  <option value="">選擇年齡範圍...</option>
+                  <option value="18-25">18-25歲</option>
+                  <option value="26-35">26-35歲</option>
+                  <option value="36-45">36-45歲</option>
+                  <option value="46-55">46-55歲</option>
+                  <option value="56+">56歲或以上</option>
+                </select>
+              </div>
+
+              <!-- 居住地區 - 使用詳細地區選項 -->
+              <div class="input-group no-border input-lg">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="now-ui-icons location_pin"></i></span>
+                </div>
+                <select name="location" class="form-control" style="font-size: 16px; padding: 12px;" required>
+                  <option value="">選擇居住地區...</option>
+                  <option value="Central & Western">中西區</option>
+                  <option value="Eastern">東區</option>
+                  <option value="Southern">南區</option>
+                  <option value="Wan Chai">灣仔</option>
+                  <option value="Kowloon City">九龍城</option>
+                  <option value="Kwun Tong">觀塘</option>
+                  <option value="Sham Shui Po">深水埗</option>
+                  <option value="Wong Tai Sin">黃大仙</option>
+                  <option value="Yau Tsim Mong">油尖旺</option>
+                  <option value="Islands">離島</option>
+                  <option value="Kwai Tsing">葵青</option>
+                  <option value="North">北區</option>
+                  <option value="Sai Kung">西貢</option>
+                  <option value="Sha Tin">沙田</option>
+                  <option value="Tai Po">大埔</option>
+                  <option value="Tsuen Wan">荃灣</option>
+                  <option value="Tuen Mun">屯門</option>
+                  <option value="Yuen Long">元朗</option>
+                </select>
+              </div>
+
+              <!-- 性別 -->
+              <div class="input-group no-border input-lg">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="now-ui-icons users_single-02"></i></span>
+                </div>
+                <select name="gender" class="form-control" style="font-size: 16px; padding: 12px;" required>
+                  <option value="">選擇性別...</option>
+                  <option value="Male">男</option>
+                  <option value="Female">女</option>
+                  <option value="Other">其他</option>
+                </select>
+              </div>
+
+              <!-- 職業 -->
+              <div class="input-group no-border input-lg">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="now-ui-icons business_briefcase-24"></i></span>
+                </div>
+                <select name="occupation" class="form-control" style="font-size: 16px; padding: 12px;" required>
+                  <option value="">選擇職業...</option>
+                  <option value="student">學生</option>
+                  <option value="office_worker">上班族</option>
+                  <option value="freelancer">自由工作者</option>
+                  <option value="business_owner">企業主</option>
+                  <option value="retired">退休</option>
+                  <option value="other">其他</option>
+                </select>
+              </div>
+
+              <!-- 飲食偏好 - 改用按鈕組方式 -->
+              <div class="form-group">
+                <label class="text-dark" style="font-size: 18px; font-weight: bold; color: #333 !important; margin-bottom: 15px;">飲食偏好 (可多選):</label>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="btn-group-vertical d-block" role="group">
+                      <button type="button" class="btn btn-outline-primary food-pref-btn mb-2" data-value="中式" style="text-align: left; padding: 12px 15px; font-size: 16px; border-radius: 8px; color: #333;">🥢 中式</button>
+                      <button type="button" class="btn btn-outline-primary food-pref-btn mb-2" data-value="西式" style="text-align: left; padding: 12px 15px; font-size: 16px; border-radius: 8px; color: #333;">🍽️ 西式</button>
+                      <button type="button" class="btn btn-outline-primary food-pref-btn mb-2" data-value="日式" style="text-align: left; padding: 12px 15px; font-size: 16px; border-radius: 8px; color: #333;">🍣 日式</button>
+                      <button type="button" class="btn btn-outline-primary food-pref-btn mb-2" data-value="韓式" style="text-align: left; padding: 12px 15px; font-size: 16px; border-radius: 8px; color: #333;">🥘 韓式</button>
+                      <button type="button" class="btn btn-outline-primary food-pref-btn mb-2" data-value="泰式" style="text-align: left; padding: 12px 15px; font-size: 16px; border-radius: 8px; color: #333;">🌶️ 泰式</button>
+                      <button type="button" class="btn btn-outline-primary food-pref-btn mb-2" data-value="素食" style="text-align: left; padding: 12px 15px; font-size: 16px; border-radius: 8px; color: #333;">🥗 素食</button>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="btn-group-vertical d-block" role="group">
+                      <button type="button" class="btn btn-outline-primary food-pref-btn mb-2" data-value="有機" style="text-align: left; padding: 12px 15px; font-size: 16px; border-radius: 8px; color: #333;">🌱 有機食品</button>
+                      <button type="button" class="btn btn-outline-primary food-pref-btn mb-2" data-value="海鮮" style="text-align: left; padding: 12px 15px; font-size: 16px; border-radius: 8px; color: #333;">🦐 海鮮</button>
+                      <button type="button" class="btn btn-outline-primary food-pref-btn mb-2" data-value="清真" style="text-align: left; padding: 12px 15px; font-size: 16px; border-radius: 8px; color: #333;">☪️ 清真食品</button>
+                      <button type="button" class="btn btn-outline-primary food-pref-btn mb-2" data-value="不吃牛肉" style="text-align: left; padding: 12px 15px; font-size: 16px; border-radius: 8px; color: #333;">🚫🐄 不吃牛肉</button>
+                      <button type="button" class="btn btn-outline-primary food-pref-btn mb-2" data-value="不吃豬肉" style="text-align: left; padding: 12px 15px; font-size: 16px; border-radius: 8px; color: #333;">🚫🐷 不吃豬肉</button>
+                    </div>
+                  </div>
+                </div>
+                <!-- 隱藏的輸入欄位來存儲選中的值 -->
+                <input type="hidden" name="food_preferences" id="food_preferences_input" value="">
+              </div>
+
+              <!-- 添加 JavaScript 來處理按鈕點擊 -->
+              <script>
+              document.addEventListener('DOMContentLoaded', function() {
+                const foodPrefButtons = document.querySelectorAll('.food-pref-btn');
+                const hiddenInput = document.getElementById('food_preferences_input');
+                let selectedPrefs = [];
+
+                // 在編輯模式下，預設選中的飲食偏好
+                {% if is_edit %}
+                  {% if foodie.favor_chinese %}selectedPrefs.push('中式');{% endif %}
+                  {% if foodie.favor_western %}selectedPrefs.push('西式');{% endif %}
+                  {% if foodie.favor_japan %}selectedPrefs.push('日式');{% endif %}
+                  {% if foodie.favor_korean %}selectedPrefs.push('韓式');{% endif %}
+                  {% if foodie.favor_thai %}selectedPrefs.push('泰式');{% endif %}
+                  {% if foodie.favor_veg %}selectedPrefs.push('素食');{% endif %}
+                  {% if foodie.favor_organic %}selectedPrefs.push('有機');{% endif %}
+                  {% if foodie.favor_seafood %}selectedPrefs.push('海鮮');{% endif %}
+                  {% if foodie.favor_muslim %}selectedPrefs.push('清真');{% endif %}
+                  {% if foodie.favor_no_beef %}selectedPrefs.push('不吃牛肉');{% endif %}
+                  {% if foodie.favor_no_pork %}selectedPrefs.push('不吃豬肉');{% endif %}
+                  
+                  // 更新按鈕狀態
+                  foodPrefButtons.forEach(button => {
+                    const value = button.getAttribute('data-value');
+                    if (selectedPrefs.includes(value)) {
+                      button.classList.remove('btn-outline-primary');
+                      button.classList.add('btn-primary');
+                    }
+                  });
+                  
+                  // 更新隱藏輸入欄位
+                  hiddenInput.value = selectedPrefs.join(',');
+                {% endif %}
+
+                foodPrefButtons.forEach(button => {
+                  button.addEventListener('click', function() {
+                    const value = this.getAttribute('data-value');
+                    
+                    if (this.classList.contains('btn-primary')) {
+                      // 取消選擇
+                      this.classList.remove('btn-primary');
+                      this.classList.add('btn-outline-primary');
+                      selectedPrefs = selectedPrefs.filter(pref => pref !== value);
+                    } else {
+                      // 選擇
+                      this.classList.remove('btn-outline-primary');
+                      this.classList.add('btn-primary');
+                      selectedPrefs.push(value);
+                    }
+                    
+                    // 更新隱藏輸入欄位
+                    hiddenInput.value = selectedPrefs.join(',');
+                  });
+                });
+              });
+              </script>
+
+              <!-- 個人簡介 -->
+              <div class="input-group no-border input-lg">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="now-ui-icons ui-1_email-85"></i></span>
+                </div>
+                <textarea name="bio" class="form-control" rows="3" placeholder="簡單介紹一下自己... (可選)" style="font-weight: 500;"></textarea>
+              </div>
+
+            </div>
+            <div class="card-footer text-center">
+              <button type="submit" class="btn btn-primary btn-round btn-lg btn-block">完成註冊</button>
+              <div class="pull-left">
+              </div>
+              <div class="pull-right">
+                <h6>
+                  <a href="#" class="link">需要幫助?</a>
+                </h6>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

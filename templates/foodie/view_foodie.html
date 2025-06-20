@@ -1,9 +1,130 @@
-<h1> Hey </h1>
+{% extends 'base.html' %}
+{% load static %}
 
-{% for items in view_foodie %}
+{% block title %}{{ foodie.foodie_name }} - 會員資料 - 兩餸飯搜查組{% endblock %}
 
-            <h5 class="card-title">{{ items.foodie_name }}</h5>
-
-
-{% endfor %}
+{% block content %}
+<div class="page-header clear-filter" filter-color="orange">
+  <div class="page-header-image" style="background-image:url({% static 'img/login.jpg' %})"></div>
+  <div class="content">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 ml-auto mr-auto">
+          <div class="card card-plain">
+            <div class="card-header text-center">
+              <h2 class="card-title" style="color: #2c3e50; font-weight: bold;">會員資料</h2>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <!-- 左側：頭像和基本資訊 -->
+                <div class="col-md-4 text-center">
+                  {% if foodie.foodie_photo %}
+                    <img src="{{ foodie.foodie_photo.url }}" alt="{{ foodie.foodie_name }}" class="img-fluid rounded-circle mb-3" style="width: 200px; height: 200px; object-fit: cover; border: 4px solid #3498db;">
+                  {% else %}
+                    <div class="avatar-placeholder mb-3" style="width: 200px; height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; border: 4px solid #3498db;">
+                      <i class="now-ui-icons users_single-02" style="font-size: 60px; color: white;"></i>
+                    </div>
+                  {% endif %}
+                  <h3 style="color: #2c3e50; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">{{ foodie.foodie_name }}</h3>
+                  {% if foodie.is_mvp %}
+                    <span class="badge badge-warning" style="font-size: 14px; padding: 8px 12px;">🏆 MVP 會員</span>
+                  {% endif %}
+                </div>
+                
+                <!-- 右側：詳細資訊 -->
+                <div class="col-md-8">
+                  <div class="row mb-4">
+                    <div class="col-md-6">
+                      <h5 style="color: #2c3e50; font-weight: bold;"><i class="now-ui-icons users_single-02" style="color: #3498db;"></i> 性別</h5>
+                      <p style="color: #34495e; font-weight: 600; font-size: 16px;">{{ foodie.get_gender_display }}</p>
+                    </div>
+                    <div class="col-md-6">
+                      <h5 style="color: #2c3e50; font-weight: bold;"><i class="now-ui-icons ui-1_calendar-60" style="color: #e74c3c;"></i> 年齡範圍</h5>
+                      <p style="color: #34495e; font-weight: 600; font-size: 16px;">{{ foodie.get_age_range_display }}</p>
+                    </div>
+                  </div>
+                  
+                  <div class="row mb-4">
+                    <div class="col-md-6">
+                      <h5 style="color: #2c3e50; font-weight: bold;"><i class="now-ui-icons business_briefcase-24" style="color: #f39c12;"></i> 職業</h5>
+                      <p style="color: #34495e; font-weight: 600; font-size: 16px;">{{ foodie.get_occupation_display }}</p>
+                    </div>
+                    <div class="col-md-6">
+                      <h5 style="color: #2c3e50; font-weight: bold;"><i class="now-ui-icons location_pin" style="color: #27ae60;"></i> 居住地區</h5>
+                      <p style="color: #34495e; font-weight: 600; font-size: 16px;">{{ foodie.get_live_district_display }}</p>
+                    </div>
+                  </div>
+                  
+                  <!-- 飲食偏好 -->
+                  <div class="mb-4">
+                    <h5 style="color: #2c3e50; font-weight: bold; margin-bottom: 15px;"><i class="now-ui-icons shopping_basket" style="color: #e67e22;"></i> 飲食偏好</h5>
+                    <div class="food-preferences">
+                      {% if foodie.favor_chinese %}
+                        <span class="badge" style="background: linear-gradient(45deg, #ff6b6b, #ee5a24); color: white; font-size: 14px; padding: 8px 12px; margin: 3px; border-radius: 20px; font-weight: bold;">🥢 中式料理</span>
+                      {% endif %}
+                      {% if foodie.favor_western %}
+                        <span class="badge" style="background: linear-gradient(45deg, #4834d4, #686de0); color: white; font-size: 14px; padding: 8px 12px; margin: 3px; border-radius: 20px; font-weight: bold;">🍽️ 西式料理</span>
+                      {% endif %}
+                      {% if foodie.favor_japan %}
+                        <span class="badge" style="background: linear-gradient(45deg, #ff9ff3, #f368e0); color: white; font-size: 14px; padding: 8px 12px; margin: 3px; border-radius: 20px; font-weight: bold;">🍣 日式料理</span>
+                      {% endif %}
+                      {% if foodie.favor_korean %}
+                        <span class="badge" style="background: linear-gradient(45deg, #ff3838, #ff4757); color: white; font-size: 14px; padding: 8px 12px; margin: 3px; border-radius: 20px; font-weight: bold;">🥘 韓式料理</span>
+                      {% endif %}
+                      {% if foodie.favor_thai %}
+                        <span class="badge" style="background: linear-gradient(45deg, #ff6348, #ff7675); color: white; font-size: 14px; padding: 8px 12px; margin: 3px; border-radius: 20px; font-weight: bold;">🌶️ 泰式料理</span>
+                      {% endif %}
+                      {% if foodie.favor_veg %}
+                        <span class="badge" style="background: linear-gradient(45deg, #00b894, #00cec9); color: white; font-size: 14px; padding: 8px 12px; margin: 3px; border-radius: 20px; font-weight: bold;">🥗 素食主義</span>
+                      {% endif %}
+                      {% if foodie.favor_organic %}
+                        <span class="badge" style="background: linear-gradient(45deg, #6c5ce7, #a29bfe); color: white; font-size: 14px; padding: 8px 12px; margin: 3px; border-radius: 20px; font-weight: bold;">🌱 有機食品</span>
+                      {% endif %}
+                      {% if foodie.favor_seafood %}
+                        <span class="badge" style="background: linear-gradient(45deg, #0984e3, #74b9ff); color: white; font-size: 14px; padding: 8px 12px; margin: 3px; border-radius: 20px; font-weight: bold;">🦐 海鮮料理</span>
+                      {% endif %}
+                      {% if foodie.favor_muslim %}
+                        <span class="badge" style="background: linear-gradient(45deg, #fdcb6e, #e17055); color: white; font-size: 14px; padding: 8px 12px; margin: 3px; border-radius: 20px; font-weight: bold;">☪️ 清真食品</span>
+                      {% endif %}
+                      {% if foodie.favor_no_beef %}
+                        <span class="badge" style="background: linear-gradient(45deg, #636e72, #2d3436); color: white; font-size: 14px; padding: 8px 12px; margin: 3px; border-radius: 20px; font-weight: bold;">🚫🐄 不吃牛肉</span>
+                      {% endif %}
+                      {% if foodie.favor_no_pork %}
+                        <span class="badge" style="background: linear-gradient(45deg, #636e72, #2d3436); color: white; font-size: 14px; padding: 8px 12px; margin: 3px; border-radius: 20px; font-weight: bold;">🚫🐷 不吃豬肉</span>
+                      {% endif %}
+                      
+                      <!-- 如果沒有任何飲食偏好 -->
+                      {% if not foodie.favor_chinese and not foodie.favor_western and not foodie.favor_japan and not foodie.favor_korean and not foodie.favor_thai and not foodie.favor_veg and not foodie.favor_organic and not foodie.favor_seafood and not foodie.favor_muslim and not foodie.favor_no_beef and not foodie.favor_no_pork %}
+                        <span class="badge" style="background: linear-gradient(45deg, #ddd, #bbb); color: #666; font-size: 14px; padding: 8px 12px; margin: 3px; border-radius: 20px; font-weight: bold;">🤷‍♂️ 未設定飲食偏好</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                  
+                  <!-- 個人簡介 -->
+                  {% if foodie.foodie_desc %}
+                  <div class="mb-4">
+                    <h5 style="color: #2c3e50; font-weight: bold;"><i class="now-ui-icons ui-1_email-85" style="color: #9b59b6;"></i> 個人簡介</h5>
+                    <p style="color: #2c3e50; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 20px; border-radius: 12px; font-weight: 500; font-size: 16px; line-height: 1.6; border-left: 4px solid #3498db;">{{ foodie.foodie_desc }}</p>
+                  </div>
+                  {% endif %}
+                  
+                  <!-- 加入時間 -->
+                  <div class="mb-4">
+                    <h5 style="color: #2c3e50; font-weight: bold;"><i class="now-ui-icons ui-1_calendar-60" style="color: #e74c3c;"></i> 加入時間</h5>
+                    <p style="color: #34495e; font-weight: 600; font-size: 16px;">{{ foodie.updated_date|date:"Y年m月d日" }}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="text-center mt-4">
+                <a href="javascript:history.back()" class="btn btn-outline-primary" style="font-weight: bold; padding: 10px 30px; border-radius: 25px;">🔙 返回</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
             
