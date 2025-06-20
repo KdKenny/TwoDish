@@ -4,6 +4,45 @@
 {% block title %}完善個人資料 - 兩餸飯搜查組{% endblock %}
 
 {% block content %}
+<style>
+/* 修正 alert 樣式，避免影響滾動 */
+.alert {
+    position: relative !important;
+    z-index: 1 !important;
+    margin-bottom: 20px;
+    max-width: 100%;
+    overflow: visible;
+}
+
+/* 確保頁面可以正常滾動 - 加強版 */
+.page-header {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    height: auto !important;
+    min-height: 100vh !important;
+    max-height: none !important;
+}
+
+.page-header .content {
+    overflow: visible !important;
+    height: auto !important;
+}
+
+.card-body {
+    overflow: visible !important;
+}
+
+/* 確保容器可以擴展 */
+.container {
+    height: auto !important;
+}
+
+/* 修正表單容器 */
+.card-login {
+    margin-bottom: 50px;
+}
+</style>
+
 <div class="page-header clear-filter" filter-color="orange">
   <div class="page-header-image" style="background-image:url({% static 'img/login.jpg' %})"></div>
   <div class="content">
@@ -26,11 +65,35 @@
               <!-- 顯示訊息 -->
               {% if messages %}
                 {% for message in messages %}
-                  <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %}" role="alert">
+                  <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} alert-dismissible" role="alert" style="position: relative; z-index: 1; margin-bottom: 20px;">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
                     {{ message }}
                   </div>
                 {% endfor %}
               {% endif %}
+
+              <!-- 添加 JavaScript 來改善滾動體驗 -->
+              <script>
+              document.addEventListener('DOMContentLoaded', function() {
+                // 如果有 alert 訊息，確保頁面可以滾動
+                const alerts = document.querySelectorAll('.alert');
+                if (alerts.length > 0) {
+                  // 移除可能影響滾動的樣式
+                  document.body.style.overflow = 'auto';
+                  document.documentElement.style.overflow = 'auto';
+                  
+                  // 延遲後自動滾動到表單區域
+                  setTimeout(function() {
+                    const cardBody = document.querySelector('.card-body');
+                    if (cardBody) {
+                      cardBody.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                  }, 500);
+                }
+              });
+              </script>
 
               <!-- 個人頭像 -->
               <div class="input-group no-border input-lg">
@@ -119,11 +182,11 @@
                 </div>
                 <select name="occupation" class="form-control" style="font-size: 16px; padding: 12px;" required>
                   <option value="">選擇職業...</option>
-                  <option value="student">學生</option>
-                  <option value="office_worker">上班族</option>
-                  <option value="freelancer">自由工作者</option>
-                  <option value="business_owner">企業主</option>
-                  <option value="retired">退休</option>
+                  <option value="office">白領</option>
+                  <option value="technical">技工</option>
+                  <option value="driver">司機</option>
+                  <option value="wife">主婦</option>
+                  <option value="boss">老闆</option>
                   <option value="other">其他</option>
                 </select>
               </div>
