@@ -24,45 +24,20 @@
             <p class="text-center text-light mb-4">歡迎來到兩餸飯搜查組！我們的專業團隊致力於為大家提供最優質的兩餸飯資訊和服務。</p>
             
             <div class="row">
-              <!-- Admin 1 -->
-              <div class="col-md-6 col-lg-3 mb-4">
-                <div class="text-center">
-                  <img src="{% static 'img/avatar.jpg' %}" alt="管理員1" class="img-fluid rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                  <h5 style="color:rgb(193, 247, 94);">Mandy</h5>
-                  <p class="text-light small">首席美食搜查員</p>
-                  <p class="text-light small">專精港式茶餐廳文化，擁有10年餐飲業經驗</p>
+              {% for admin in admin_users %}
+                <div class="col-md-6 col-lg-3 mb-4">
+                  <div class="text-center">
+                    {% if admin.admin_photo %}
+                      <img src="{{ admin.admin_photo.url }}" alt="{{ admin.admin_name }}" class="img-fluid rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    {% else %}
+                      <img src="{% static 'img/avatar.jpg' %}" alt="{{ admin.admin_name }}" class="img-fluid rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    {% endif %}
+                    <h5 style="color:rgb(193, 247, 94);">{{ admin.admin_name }}</h5>
+                    <p class="text-light small">{{ admin.admin_desc }}</p>
+                    <p class="text-light small">{{ admin.admin_email }}</p>
+                  </div>
                 </div>
-              </div>
-              
-              <!-- Admin 2 -->
-              <div class="col-md-6 col-lg-3 mb-4">
-                <div class="text-center">
-                  <img src="{% static 'img/profile.jpg' %}" alt="管理員2" class="img-fluid rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                  <h5 style="color:rgb(193, 247, 94);">Kenny</h5>
-                  <p class="text-light small">品質監控專員</p>
-                  <p class="text-light small">負責餐廳評級標準制定，確保推薦品質</p>
-                </div>
-              </div>
-              
-              <!-- Admin 3 -->
-              <div class="col-md-6 col-lg-3 mb-4">
-                <div class="text-center">
-                  <img src="{% static 'img/eva.jpg' %}" alt="管理員3" class="img-fluid rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                  <h5 style="color:rgb(193, 247, 94);">Chrissy</h5>
-                  <p class="text-light small">社群營運經理</p>
-                  <p class="text-light small">管理用戶社群，收集反饋意見</p>
-                </div>
-              </div>
-              
-              <!-- Admin 4 -->
-              <div class="col-md-6 col-lg-3 mb-4">
-                <div class="text-center">
-                  <img src="{% static 'img/ryan.jpg' %}" alt="管理員4" class="img-fluid rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                  <h5 style="color:rgb(193, 247, 94);">Raymond</h5>
-                  <p class="text-light small">技術開發總監</p>
-                  <p class="text-light small">負責平台技術開發與維護</p>
-                </div>
-              </div>
+              {% endfor %}
             </div>
             
             <div class="text-center mt-4">

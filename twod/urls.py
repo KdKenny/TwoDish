@@ -11,6 +11,6 @@ urlpatterns = [
     path('comments/', include('comments.urls', namespace='comments')),
     path('foodie/', include('foodie.urls', namespace='foodie')),
     path('accounts/', include('accounts.urls', namespace='accounts')),
+    path('accounts/', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
-    path('accounts/', include('django.contrib.auth.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + debug_toolbar_urls()
