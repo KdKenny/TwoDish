@@ -1,11 +1,5 @@
 from django.db import models
 
-from django.db import models
-
-from datetime import datetime
-
-# Create your models here.
-
 class Adminuser(models.Model):
     admin_name = models.CharField(max_length=200)
     admin_photo = models.ImageField(upload_to='Admin_Photo/', blank=True, null=True)

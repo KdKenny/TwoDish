@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.conf import settings
 from listings.models import two_dish_rice
+from adminusers.models import Adminuser
 
 # Create your views here.
 def index(request):
@@ -15,7 +16,11 @@ def index(request):
     return render(request,'pages/index.html', context)
 
 def about(request):
-    return render(request,'pages/about.html')
+    admin_users = Adminuser.objects.all()
+    context = {
+        'admin_users': admin_users
+    }
+    return render(request,'pages/about.html', context)
 
 def news(request):
     # emu news 
