@@ -14,86 +14,69 @@
     overflow: visible;
 }
 
-/* 確保頁面可以正常滾動 - 加強版 */
-.page-header {
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    height: auto !important;
-    min-height: 100vh !important;
-    max-height: none !important;
-}
-
-.page-header .content {
-    overflow: visible !important;
-    height: auto !important;
-}
-
-.card-body {
-    overflow: visible !important;
-}
-
-/* 確保容器可以擴展 */
-.container {
-    height: auto !important;
-}
-
 /* 修正表單容器 */
 .card-login {
     margin-bottom: 50px;
+    margin-top: 50px;
+}
+
+/* 添加背景樣式 */
+.form-section {
+    background: linear-gradient(135deg,rgb(250, 131, 72) 0%,rgb(255, 255, 255) 100%);
+    min-height: 100vh;
+    padding: 50px 0;
 }
 </style>
 
-<div class="page-header clear-filter" filter-color="orange">
-  <div class="page-header-image" style="background-image:url({% static 'img/login.jpg' %})"></div>
-  <div class="content">
-    <div class="container">
-      <div class="col-md-6 ml-auto mr-auto">
-        <div class="card card-login card-plain">
-          <form class="form" method="post" 
-                action="{% if is_edit %}{% url 'foodie:edit_foodie' %}{% else %}{% url 'foodie:add_foodie' %}{% endif %}" 
-                enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="card-header text-center">
-              <div class="logo-container">
-                <img src="{% static 'img/now-logo.png' %}" alt="">
-              </div>
+<div class="form-section">
+  <div class="container">
+    <div class="col-md-6 ml-auto mr-auto">
+      <div class="card card-login card-plain">
+        <form class="form" method="post" 
+              action="{% if is_edit %}{% url 'foodie:edit_foodie' %}{% else %}{% url 'foodie:add_foodie' %}{% endif %}" 
+              enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="card-header text-center">
+            <div class="logo-container">
+              <img src="{% static 'img/now-logo.png' %}" alt="">
             </div>
-            <div class="card-body">
-              <h2 class="text-center text-danger">完善個人資料</h2>
-              <p class="text-center text-danger">讓其他會員更了解你！</p>
-              
-              <!-- 顯示訊息 -->
-              {% if messages %}
-                {% for message in messages %}
-                  <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} alert-dismissible" role="alert" style="position: relative; z-index: 1; margin-bottom: 20px;">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                    {{ message }}
-                  </div>
-                {% endfor %}
-              {% endif %}
+          </div>
+          <div class="card-body">
+            <h2 class="text-center text-danger">完善個人資料</h2>
+            <p class="text-center text-danger">讓其他會員更了解你！</p>
+            
+            <!-- 顯示訊息 -->
+            {% if messages %}
+              {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} alert-dismissible" role="alert" style="position: relative; z-index: 1; margin-bottom: 20px;">
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
 
-              <!-- 添加 JavaScript 來改善滾動體驗 -->
-              <script>
-              document.addEventListener('DOMContentLoaded', function() {
-                // 如果有 alert 訊息，確保頁面可以滾動
-                const alerts = document.querySelectorAll('.alert');
-                if (alerts.length > 0) {
-                  // 移除可能影響滾動的樣式
-                  document.body.style.overflow = 'auto';
-                  document.documentElement.style.overflow = 'auto';
-                  
-                  // 延遲後自動滾動到表單區域
-                  setTimeout(function() {
-                    const cardBody = document.querySelector('.card-body');
-                    if (cardBody) {
-                      cardBody.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                  }, 500);
-                }
-              });
-              </script>
+            <!-- 添加 JavaScript 來改善滾動體驗 -->
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              // 如果有 alert 訊息，確保頁面可以滾動
+              const alerts = document.querySelectorAll('.alert');
+              if (alerts.length > 0) {
+                // 移除可能影響滾動的樣式
+                document.body.style.overflow = 'auto';
+                document.documentElement.style.overflow = 'auto';
+                
+                // 延遲後自動滾動到表單區域
+                setTimeout(function() {
+                  const cardBody = document.querySelector('.card-body');
+                  if (cardBody) {
+                    cardBody.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+                }, 500);
+              }
+            });
+            </script>
 
               <!-- 個人頭像 -->
               <div class="input-group no-border input-lg">
@@ -279,9 +262,9 @@
               <!-- 個人簡介 -->
               <div class="input-group no-border input-lg">
                 <div class="input-group-prepend">
-                  <span class="input-group-text"><i class="now-ui-icons ui-1_email-85"></i></span>
+                  <span class="input-group-text"><i class="now-ui-icons text_caps-small"></i></span>
                 </div>
-                <textarea name="bio" class="form-control" rows="3" placeholder="簡單介紹一下自己... (可選)" style="font-weight: 500;"></textarea>
+                <textarea name="foodie_desc" class="form-control" placeholder="請簡單介紹一下自己..." rows="4" style="font-size: 16px; padding: 12px;">{% if is_edit %}{{ foodie.foodie_desc }}{% endif %}</textarea>
               </div>
 
             </div>
