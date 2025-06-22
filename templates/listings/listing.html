@@ -28,9 +28,9 @@
     <section id="listing" class="py-4">
       <div class="container">
         {% comment %}  {% endcomment %}
-        <a href= {% url "listings:search" %} class="btn btn-light mb-4">Back To Search Page</a>
+        <a href= {% url "listings:search" %} class="btn btn-primary mb-4">Back To Search Page</a>
         <div class="row">
-          <div class="col-md-9">
+          <div class="col-lg-12">
             <!-- Home Main Image -->
             {% comment %}  {% endcomment %}
             <a href="{% if listing.restaurant_photo_main %}{{ listing.restaurant_photo_main.url }}{% else %}{% static 'images/default_restaurant.jpg' %}{% endif %}" data-lightbox="main-photo">
@@ -151,27 +151,204 @@
 
             <!-- Fields -->
             <div class="row mb-12 fields">
-              <div class="col-md-6">
-                <ul class="list-group list-group-flush">
-                  <li class="list-group-item text-secondary">
-                    {% comment %}  {% endcomment %}
-                    <i class="fas fa-money-bill-alt"></i> Two Dish Price:
-                    <span class="float-right">{{listing.two_dish_price}}</span>
-                  </li>
-                 <li class="list-group-item text-secondary">
-                    {% comment %}  {% endcomment %}
-                    <i class="fas fa-money-bill-alt"></i> Three Dish Price:
-                    <span class="float-right">{{listing.three_dish_price}}</span>
-                  </li>   
-                <li class="list-group-item text-secondary">
-                    {% comment %}  {% endcomment %}
-                    <i class="fas fa-money-bill-alt"></i> Address:
-                    <span class="float-right">{{listing.restaurant_address}}</span>
-                  </li>                  
-                </ul>
-              </div>
-            </div>
+  <div class="col-md-6">
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item text-secondary">
+        <i class="fas fa-money-bill-alt"></i> 兩餸飯價格:
+        <span class="float-right">${{listing.two_dish_price}}</span>
+      </li>
+      <li class="list-group-item text-secondary">
+        <i class="fas fa-money-bill-alt"></i> 三餸飯價格:
+        <span class="float-right">${{listing.three_dish_price}}</span>
+      </li>
+      <li class="list-group-item text-secondary">
+        <i class="fas fa-tint"></i> 飲品價格:
+        <span class="float-right">${{listing.drink_price}}</span>
+      </li>
+      <li class="list-group-item text-secondary">
+        <i class="fas fa-burn"></i> 湯價格:
+        <span class="float-right">${{listing.soup_price}}</span>
+      </li>
+      <li class="list-group-item text-secondary">
+        <i class="fas fa-map-marker-alt"></i> 地區:
+        <span class="float-right">{{listing.restaurant_area}}</span>
+      </li>
+      <li class="list-group-item text-secondary">
+        <i class="fas fa-map-pin"></i> 區域:
+        <span class="float-right">{{listing.restaurant_district}}</span>
+      </li>
+    </ul>
+  </div>
+  
+  <div class="col-md-6">
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item text-secondary">
+        <i class="fas fa-utensils"></i> 堂食:
+        <span class="float-right">
+          {% if listing.dine_in %}
+            <i class="fas fa-check text-success"></i> 有提供
+          {% else %}
+            <i class="fas fa-times text-danger"></i> 沒有
+          {% endif %}
+        </span>
+      </li>
+      <li class="list-group-item text-secondary">
+        <i class="fas fa-shopping-bag"></i> 外賣:
+        <span class="float-right">
+          {% if listing.takeaway %}
+            <i class="fas fa-check text-success"></i> 有提供
+          {% else %}
+            <i class="fas fa-times text-danger"></i> 沒有
+          {% endif %}
+        </span>
+      </li>
+      <li class="list-group-item text-secondary">
+        <i class="fas fa-credit-card"></i> 八達通:
+        <span class="float-right">
+          {% if listing.payment_octopus %}
+            <i class="fas fa-check text-success"></i> 接受
+          {% else %}
+            <i class="fas fa-times text-danger"></i> 不接受
+          {% endif %}
+        </span>
+      </li>
+      <li class="list-group-item text-secondary">
+        <i class="fab fa-alipay"></i> 支付寶:
+        <span class="float-right">
+          {% if listing.payment_alipayhk %}
+            <i class="fas fa-check text-success"></i> 接受
+          {% else %}
+            <i class="fas fa-times text-danger"></i> 不接受
+          {% endif %}
+        </span>
+      </li>
+      <li class="list-group-item text-secondary">
+        <i class="fab fa-weixin"></i> 微信支付:
+        <span class="float-right">
+          {% if listing.payment_wechatpay %}
+            <i class="fas fa-check text-success"></i> 接受
+          {% else %}
+            <i class="fas fa-times text-danger"></i> 不接受
+          {% endif %}
+        </span>
+      </li>
+      <li class="list-group-item text-secondary">
+        <i class="fas fa-ticket-alt"></i> 優惠券:
+        <span class="float-right">
+          {% if listing.discount_coupon %}
+            <i class="fas fa-check text-success"></i> 有提供
+          {% else %}
+            <i class="fas fa-times text-danger"></i> 沒有
+          {% endif %}
+        </span>
+      </li>
+    </ul>
+  </div>
+</div>
 
+<!-- 營業時間區塊 -->
+<div class="row mb-4">
+  <div class="col-md-12">
+    <h4><i class="fas fa-clock"></i> 營業時間</h4>
+  </div>
+  <div class="col-md-6">
+    <ul class="list-group list-group-flush">
+      {% if listing.fullday %}
+      <li class="list-group-item text-secondary">
+        <i class="fas fa-sun"></i> 全日:
+        <span class="float-right">{{listing.openhour_fullday}} - {{listing.closehour_fullday}}</span>
+      </li>
+      {% endif %}
+      {% if listing.afternoon %}
+      <li class="list-group-item text-secondary">
+        <i class="fas fa-cloud-sun"></i> 下午:
+        <span class="float-right">{{listing.openhour_afternoon}} - {{listing.closehour_afternoon}}</span>
+      </li>
+      {% endif %}
+    </ul>
+  </div>
+  <div class="col-md-6">
+    <ul class="list-group list-group-flush">
+      {% if listing.night %}
+      <li class="list-group-item text-secondary">
+        <i class="fas fa-moon"></i> 晚上:
+        <span class="float-right">{{listing.openhour_night}} - {{listing.closehour_night}}</span>
+      </li>
+      {% endif %}
+      {% if listing.nightsnack %}
+      <li class="list-group-item text-secondary">
+        <i class="fas fa-star"></i> 宵夜:
+        <span class="float-right">{{listing.openhour_nightsnack}} - {{listing.closehour_nightsnack}}</span>
+      </li>
+      {% endif %}
+    </ul>
+  </div>
+</div>
+
+<!-- 餐廳類型區塊 -->
+<div class="row mb-4">
+  <div class="col-md-12">
+    <h4><i class="fas fa-tags"></i> 餐廳類型</h4>
+  </div>
+  <div class="col-md-6">
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item text-secondary">
+        <i class="fas fa-drumstick-bite"></i> 中式:
+        <span class="float-right">
+          {% if listing.category_chinese %}
+            <i class="fas fa-check text-success"></i>
+          {% else %}
+            <i class="fas fa-times text-muted"></i>
+          {% endif %}
+        </span>
+      </li>
+      <li class="list-group-item text-secondary">
+        <i class="fas fa-hamburger"></i> 西式:
+        <span class="float-right">
+          {% if listing.category_western %}
+            <i class="fas fa-check text-success"></i>
+          {% else %}
+            <i class="fas fa-times text-muted"></i>
+          {% endif %}
+        </span>
+      </li>
+      <li class="list-group-item text-secondary">
+        <i class="fas fa-fish"></i> 海鮮:
+        <span class="float-right">
+          {% if listing.category_seafood %}
+            <i class="fas fa-check text-success"></i>
+          {% else %}
+            <i class="fas fa-times text-muted"></i>
+          {% endif %}
+        </span>
+      </li>
+    </ul>
+  </div>
+  <div class="col-md-6">
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item text-secondary">
+        <i class="fas fa-leaf"></i> 素食:
+        <span class="float-right">
+          {% if listing.category_veg %}
+            <i class="fas fa-check text-success"></i>
+          {% else %}
+            <i class="fas fa-times text-muted"></i>
+          {% endif %}
+        </span>
+      </li>
+      <li class="list-group-item text-secondary">
+        <i class="fas fa-torii-gate"></i> 日式:
+        <span class="float-right">
+          {% if listing.category_japan %}
+            <i class="fas fa-check text-success"></i>
+          {% else %}
+            <i class="fas fa-times text-muted"></i>
+          {% endif %}
+        </span>
+      </li>
+    </ul>
+  </div>
+</div>
             <!-- Description -->
             <div class="row mb-5">
               <div class="col-md-12">餐單：

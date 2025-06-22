@@ -16,13 +16,12 @@ def add_foodie(request):
         pass
     
     if request.method == 'POST':
-        foodie_name = request.POST.get('nickname')  # 修正欄位名稱
-        gender = request.POST.get('gender', 'Male')  # 提供預設值
+        foodie_name = request.POST.get('nickname')  
+        gender = request.POST.get('gender', 'Male')  
         age_range = request.POST.get('age_range')
-        occupation = request.POST.get('occupation', 'other')  # 提供預設值
-        live_district = request.POST.get('location')  # 修正欄位名稱
+        occupation = request.POST.get('occupation', 'other')  
+        live_district = request.POST.get('location')  
         
-        # 處理飲食偏好 - 修正這裡
         food_preferences_str = request.POST.get('food_preferences', '')
         food_preferences = [pref.strip() for pref in food_preferences_str.split(',') if pref.strip()]
         
@@ -38,8 +37,8 @@ def add_foodie(request):
         favor_no_beef = '不吃牛肉' in food_preferences
         favor_no_pork = '不吃豬肉' in food_preferences
         
-        foodie_desc = request.POST.get('bio', '')  # 修正欄位名稱並提供預設值
-        foodie_photo = request.FILES.get('profile_photo')  # 修正欄位名稱
+        foodie_desc = request.POST.get('foodie_desc', '')  
+        foodie_photo = request.FILES.get('profile_photo')
         
         try:
             new_foodie = Contact(
@@ -130,7 +129,7 @@ def edit_foodie(request):
         foodie.favor_no_beef = '不吃牛肉' in food_preferences
         foodie.favor_no_pork = '不吃豬肉' in food_preferences
         
-        foodie.foodie_desc = request.POST.get('bio', foodie.foodie_desc)
+        foodie.foodie_desc = request.POST.get('foodie_desc', foodie.foodie_desc)
         
         # 處理照片上傳
         if 'profile_photo' in request.FILES:
